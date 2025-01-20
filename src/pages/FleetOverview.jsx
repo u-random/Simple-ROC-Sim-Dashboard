@@ -77,7 +77,8 @@ const RemoteInterface = () => {
                 <Alert className="mb-4">
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                        Not connected to simulator. Attempting to reconnect...
+                        <p>  Not connected to simulator. Attempting to reconnect...</p>
+                        Hello there!
                     </AlertDescription>
                 </Alert>
             )}
