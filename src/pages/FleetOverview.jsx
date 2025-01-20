@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { AlertCircle, Video, Map, GitCommit } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/card';
+import { Alert, AlertDescription } from '../components/alert';
 
 
 // Mock WebSocket connection - replace with actual implementation
