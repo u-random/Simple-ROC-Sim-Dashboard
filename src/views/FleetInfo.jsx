@@ -1,4 +1,3 @@
-// FleetInfo.jsx
 import { useState } from 'react';
 
 const FleetInfo = () => {
