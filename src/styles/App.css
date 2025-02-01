@@ -274,3 +274,67 @@ button:focus-visible {
   background-color: #D2E3FC;
 }
 
+
+/* Cube Transition Styles */
+.container-3d {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  perspective: 2000px;
+  transform-style: preserve-3d;
+}
+
+.face-3d {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  transition: transform 1s;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  transform-style: preserve-3d;
+}
+
+.face-front {
+  transform: rotateY(0deg);
+}
+
+.face-back {
+  transform: rotateY(180deg);
+}
+
+/* Show back face */
+.container-3d.show-back .face-front {
+  transform: rotateY(-180deg);
+}
+
+.container-3d.show-back .face-back {
+  transform: rotateY(0deg);
+}
+
+/* Back button styling */
+.back-button {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.back-button:hover {
+  color: #333;
+  background-color: #f0f0f0;
+}
+
+/* Modify list-header for back button */
+.face-back .list-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  justify-content: flex-start;
+}
