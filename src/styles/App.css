@@ -5,18 +5,29 @@
   box-sizing: border-box;
 }
 
+
+/* CSS Variables & Root Styles */
 :root {
+  /* Typography */
   font-family: Rubik, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+
+  /* Color Theme */
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
+
+  /* Font Rendering */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Debug Helpers */
+  --debug-borders: none; /* Change to solid to enable debug */
 }
+
 
 /* Layout */
 #root {
@@ -37,8 +48,10 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+/* End Layout */
 
-/* Typography */
+
+/* Typography and Links */
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -53,31 +66,10 @@ a {
 a:hover {
   color: #535bf2;
 }
+/* End Typography and Links */
 
-/* Components */
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
+/* Button Styles */
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -99,17 +91,26 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* Animations */
-@keyframes logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+/* Back button styling */
+.back-button {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.back-button:hover {
+  color: #333;
+  background-color: #f0f0f0;
 }
+
+/* End Button Styles */
+
 
 /* Light Theme */
 @media (prefers-color-scheme: light) {
@@ -126,6 +127,7 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+/* End Light Theme */
 
 
 /* FLEET OVERVIEW Definitions */
@@ -219,20 +221,8 @@ button:focus-visible {
 }
 
 
-
-
-
 /* Styles for FleetInfo.jsx */
-/* This is the container that houses the 25% width and full window height  */
-.container-25 {
-  width: 25%;
-  display: flex;          /* V-stack header and list*/
-  flex-direction: column; /* V-stack header and list*/
-  height: 100vh;           /* BUG:Make sure this is right for scrolling*/
-  max-height: 100%;
-  background-color: white;
-  overflow: hidden;  /* DEBUG */
-}
+
 
 /* Style for list header with grey bg  */
 .list-header {
@@ -246,6 +236,7 @@ button:focus-visible {
 
 /* Style for list distribution/scrolling  */
 .list {
+  position: relative;
   display: flex;
   flex-direction: column;
   overflow-y: auto; /* scrolling */
@@ -275,13 +266,44 @@ button:focus-visible {
 }
 
 
-/* Cube Transition Styles */
-.container-3d {
+/* DEBUG Borders */
+.container-25 { border: 2px var(--debug-borders) red; }
+.content-wrapper { border: 2px var(--debug-borders) blue; }
+.container-3d { border: 2px var(--debug-borders) green; }
+.face-3d { border: 2px var(--debug-borders) purple; }
+.list-header { border: 2px var(--debug-borders) orange; }
+.list { border: 2px var(--debug-borders) yellow; }
+/* End DEBUG Borders */
+
+
+/* List column styles */
+/* This is the container that houses the 25% width and full window height  */
+.container-25 {
+  width: 25%;
+  display: flex;          /* V-stack header and list*/
+  flex-direction: column; /* V-stack header and list*/
+  height: 100vh;           /* BUG:Make sure this is right for scrolling*/
+  max-height: 100%;
+  background-color: white;
+  overflow: hidden;  /* DEBUG */
+}
+
+.content-wrapper {
+  height: 100%;
   position: relative;
+  perspective: 2000px;
+}
+
+.container-3d {
+  position: absolute;
   width: 100%;
   height: 100%;
-  perspective: 2000px;
   transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.container-3d.show-back {
+  transform: rotateY(180deg);
 }
 
 .face-3d {
@@ -289,52 +311,58 @@ button:focus-visible {
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
-  transition: transform 1s;
   display: flex;
   flex-direction: column;
-  background-color: white;
-  transform-style: preserve-3d;
+  pointer-events: none;  /* Disable by default */
 }
 
-.face-front {
-  transform: rotateY(0deg);
+.face-3d.front {
+  pointer-events: auto;  /* Enable for front face */
 }
 
-.face-back {
+.show-back .face-3d.front {
+  pointer-events: none;  /* Disable front when showing back */
+}
+
+.show-back .face-3d.back {
+  pointer-events: auto;  /* Enable back when showing back */
+}
+
+.face-3d.back {
   transform: rotateY(180deg);
 }
 
-/* Show back face */
-.container-3d.show-back .face-front {
-  transform: rotateY(-180deg);
-}
-
-.container-3d.show-back .face-back {
-  transform: rotateY(0deg);
-}
-
-/* Back button styling */
-.back-button {
-  background: none;
-  border: none;
-  padding: 4px 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  color: #666;
+.face-3d.front {
+  /*background-color: rgba(255,0,0,0.1);*/
+  height: 100%;
+  min-height: 0;
   display: flex;
-  align-items: center;
-  margin-right: 8px;
+  flex-direction: column;
 }
 
-.back-button:hover {
-  color: #333;
-  background-color: #f0f0f0;
+.face-3d.back {
+/*background-color: rgba(0,0,255,0.1);*/
+height: 100%;
+min-height: 0;
+display: flex;
+flex-direction: column;
 }
 
-/* Modify list-header for back button */
-.face-back .list-header {
-  display: flex;
-  align-items: center;
-  padding: 8px 16px;
-  justify-content: flex-start;
+/* Style for list header with grey bg  */
+.list-header {
+padding: 16px;
+background-color: #E5E5E5;
+font-weight: bold;
+font-size: 1.2rem;
+text-align: center;
+border-bottom: 1px solid #D1D1D1;
 }
+
+.list {
+flex: 1 1 0;
+min-height: 0;
+overflow-y: auto;
+display: flex;
+flex-direction: column;
+}
+/* End List column styles */
