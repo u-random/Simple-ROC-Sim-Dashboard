@@ -1,56 +1,95 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+// TODO: Fix back button overlap when small width
+// TODO: OK - Change content for Ship Info
+// TODO: OK - Ship Info: Ship name reset too soon.
+// TODO: Potential for backside: Create gauges and animated things to represent conning
+
+
+import { useShips } from '../components/ShipContext';
 
 const FleetInfo = () => {
-    const [selectedShip, setSelectedShip] = useState(null);
-    const ships = ['Ship 1', 'Ship 2', 'Ship 3', 'Ship 4', 'Ship 5', 'Ship 6', 'Ship 7', 'Ship 8', 'Ship 9'];
+    const { ships, selectedShipId, selectShip } = useShips();
+    const [displayedShipId, setDisplayedShipId] = useState(null);
+    const [isAnimating, setIsAnimating] = useState(false);
 
-    const handleShipClick = (shipName) => {
-        setSelectedShip(shipName);
-    };
+    // Update displayed content with delay
+    useEffect(() => {
+        if (selectedShipId) {
+            // When selecting a ship, update immediately
+            setDisplayedShipId(selectedShipId);
+            setIsAnimating(true);
+        } else {
+            // When deselecting, wait for animation
+            setIsAnimating(true);
+            const timer = setTimeout(() => {
+                setDisplayedShipId(null);
+            }, 400);
+            return () => clearTimeout(timer);
+        }
+    }, [selectedShipId]);
 
-    const handleBackClick = () => {
-        setSelectedShip(null);
-    };
+    // Reset animation flag after transition
+    useEffect(() => {
+        if (isAnimating) {
+            const timer = setTimeout(() => {
+                setIsAnimating(false);
+            }, 600); // Match your CSS animation duration
+            return () => clearTimeout(timer);
+        }
+    }, [isAnimating]);
+
+    const displayedShip = ships.find(ship => ship.id === displayedShipId);
+    const animationStyle = 'uncover';
 
     return (
         <div className="container-25">
-            {/* 3D container for the animation. */}
-            {/* If both expressions true, string is: cube-container show-back */}
-            <div className={`container-3d ${selectedShip ? 'show-back' : ''}`}>
-                {/* Front face - Fleet Info */}
-                <div className="face-3d face-front">
-                    <div className="list-header">
-                        FLEET INFO
+            <div className="content-wrapper">
+                <div className={`container-animation ${animationStyle} ${selectedShipId ? 'show-back' : ''}`}>
+                    {/* Front face - Ship List */}
+                    <div className="face front">
+                        <div className="list-header">
+                            FLEET INFO
+                        </div>
+                        <div className="list">
+                            {ships.map(ship => (
+                                <button
+                                    key={ship.id}
+                                    className="list-item"
+                                    onClick={() => selectShip(ship.id)}
+                                >
+                                    {ship.name}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                    <div className="list">
-                        {ships.map((ship) => (
-                            <button
-                                key={ship}
-                                className="list-item"
-                                onClick={() => handleShipClick(ship)}
-                            >
-                                {ship}
-                            </button>
-                        ))}
-                    </div>
-                </div>
 
-                {/* Back face - Ship Info */}
-                <div className="face-3d face-back">
-                    <div className="list-header">
-                        <button
-                            onClick={handleBackClick}
-                            className="back-button"
-                        >
-                            ← Back
-                        </button>
-                        <span>{selectedShip}</span>
-                    </div>
-                    <div className="list">
-                        <div className="list-item">Position</div>
-                        <div className="list-item">Speed</div>
-                        <div className="list-item">Course</div>
-                        <div className="list-item">Heading</div>
+                    {/* Back face - Ship Details */}
+                    <div className="face back">
+                        <div className="list-header">
+                            <button
+                                className="back-button"
+                                onClick={() => selectShip(null)}
+                            >
+                                Back
+                            </button>
+                            {displayedShip?.name || 'N/A'}
+                        </div>
+
+                        <div className="list">
+                            <div className="list-item">
+                                Position: {displayedShip?.position || 'N/A'}
+                            </div>
+                            <div className="list-item">
+                                Speed: {displayedShip ? `${displayedShip.speed.toFixed(1)} knots` : 'N/A'}
+                            </div>
+                            <div className="list-item">
+                                Course: {displayedShip ? `${displayedShip.course.toFixed(1)}°` : 'N/A'}
+                            </div>
+                            <div className="list-item">
+                                Heading: {displayedShip ? `${displayedShip.heading.toFixed(1)}°` : 'N/A'}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
