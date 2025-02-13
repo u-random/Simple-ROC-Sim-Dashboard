@@ -20,7 +20,7 @@ const FleetOverview = () => {
                 {/* Center Column - Map */}
                 <Map />
 
-                {/* Right Column - Alarms */}
+                {/* Right Column - Notification center */}
                 <Notifications />
             </div>
         </div>

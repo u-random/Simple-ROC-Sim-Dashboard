@@ -39,6 +39,7 @@ const FleetInfo = () => {
         }
     }, [isAnimating]);
 
+    // Get ship from Ship view.
     const displayedShip = ships.find(ship => ship.id === displayedShipId);
     const animationStyle = 'uncover';
 

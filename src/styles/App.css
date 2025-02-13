@@ -109,6 +109,12 @@ button:focus-visible {
   background-color: #f0f0f0;
 }
 
+.back-button {
+  position: absolute;
+  left: 16px;
+  margin: 0;
+}
+
 /* End Button Styles */
 
 
@@ -196,9 +202,8 @@ button:focus-visible {
   flex-direction: column; /* V-stack header and list*/
   height: 100vh;           /* BUG:Make sure this is right for scrolling*/
   max-height: 100%;
-  background-color: #f36868;
+  background-color: #bbe8e5;
   overflow: hidden;  /* DEBUG */
-  padding-left: 20px;
 }
 
 /* Styles for Map.jsx */
@@ -294,68 +299,144 @@ button:focus-visible {
   perspective: 2000px;
 }
 
-.container-3d {
+/* Base styles for animations */
+.container-animation {
   position: absolute;
   width: 100%;
   height: 100%;
-  transform-style: preserve-3d;
   transition: transform 0.6s;
 }
 
-.container-3d.show-back {
-  transform: rotateY(180deg);
-}
-
-.face-3d {
+.face {
   position: absolute;
   width: 100%;
   height: 100%;
-  backface-visibility: hidden;
   display: flex;
   flex-direction: column;
-  pointer-events: none;  /* Disable by default */
+  background: white;
 }
 
-.face-3d.front {
-  pointer-events: auto;  /* Enable for front face */
+
+/* Flip animation styles */
+.container-animation.flip {
+  transform-style: preserve-3d;
 }
 
-.show-back .face-3d.front {
-  pointer-events: none;  /* Disable front when showing back */
+.container-animation.flip .face {
+  backface-visibility: hidden;
 }
 
-.show-back .face-3d.back {
-  pointer-events: auto;  /* Enable back when showing back */
-}
-
-.face-3d.back {
+.container-animation.flip .face.back {
   transform: rotateY(180deg);
 }
 
-.face-3d.front {
-  /*background-color: rgba(255,0,0,0.1);*/
-  height: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
+.container-animation.flip.show-back {
+  transform: rotateY(180deg);
 }
 
-.face-3d.back {
-/*background-color: rgba(0,0,255,0.1);*/
-height: 100%;
-min-height: 0;
-display: flex;
-flex-direction: column;
+
+/* Push animation styles */
+.container-animation.push .face {
+  transition: transform 0.6s;
+}
+
+.container-animation.push .face.front {
+  transform: translateX(0);
+}
+
+.container-animation.push .face.back {
+  transform: translateX(100%);
+}
+
+.container-animation.push.show-back .face.front {
+  transform: translateX(-100%);
+}
+
+.container-animation.push.show-back .face.back {
+  transform: translateX(0);
+}
+
+
+/* Uncover animation styles */
+.container-animation.uncover .face {
+  transition: all 0.5s ease-in-out;
+}
+
+/* Initial state */
+.container-animation.uncover .face.front {
+  transform: translateX(0);
+  z-index: 2;
+}
+
+.container-animation.uncover .face.back {
+  transform: scale(0.8);
+  opacity: 0.9;
+  z-index: 1;
+}
+
+/* Animation state */
+.container-animation.uncover.show-back .face.front {
+  transform: translateX(-100%);
+}
+
+.container-animation.uncover.show-back .face.back {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Depth effects */
+.container-animation.uncover .face.back {
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Optional: Slight tilt effect during transition /
+.container-animation.uncover.show-back .face.front {
+  transform: translateX(-100%) rotate(-2deg);
+}*/
+
+/* END Animation */
+
+
+
+/* Animation toggle button */
+.animation-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8em;
+  padding: 4px 8px;
+}
+
+/* Pointer events management */
+.face {
+  pointer-events: none;
+}
+
+.face.front {
+  pointer-events: auto;
+}
+
+.show-back .face.front {
+  pointer-events: none;
+}
+
+.show-back .face.back {
+  pointer-events: auto;
 }
 
 /* Style for list header with grey bg  */
 .list-header {
-padding: 16px;
-background-color: #E5E5E5;
-font-weight: bold;
-font-size: 1.2rem;
-text-align: center;
-border-bottom: 1px solid #D1D1D1;
+  padding: 16px;
+  background-color: #E5E5E5;
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-align: center;
+  border-bottom: 1px solid #D1D1D1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .list {
@@ -366,3 +447,267 @@ display: flex;
 flex-direction: column;
 }
 /* End List column styles */
+
+
+/* Map Styles */
+.map-viewport {
+  position: absolute;  /* Changed from relative */
+  top: 0;             /* Position at top */
+  left: 0;            /* Position at left */
+  width: 100%;
+  height: 100%;       /* Take full height */
+  overflow: auto;     /* For scrollbars */
+  user-select: none;
+  border: 3px solid yellow;
+}
+
+.map-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  aspect-ratio: 1;    /* Force square shape */
+  cursor: grab;
+  border: 3px solid red;
+}
+
+.map-container.grabbing {
+  cursor: grabbing;
+}
+
+/* The text overlay */
+.map-text {
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+  user-select: none;
+  padding: 10px;
+}
+
+.debug-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;  /* Changed from contain */
+  pointer-events: none;  /* Prevent image drag */
+  user-select: none;    /* Prevent image selection */
+}
+
+
+/* Map Layout Styles */
+.map-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.map-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto !important; /* Force enable pointer events */
+}
+
+/* Ensure the map and its children can receive pointer events */
+.maplibregl-canvas-container {
+  pointer-events: auto !important;
+}
+
+.maplibregl-canvas {
+  pointer-events: auto !important;
+}
+
+/* Info Overlay */
+.overlay-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.map-text {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom Zoom Controls */
+.map-controls {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.map-control-button {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #333;
+  transition: background-color 0.2s;
+}
+
+.map-control-button:hover {
+  background-color: #f0f0f0;
+}
+
+.map-control-button:active {
+  background-color: #e0e0e0;
+}
+
+.map-control-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+  background-color: white;
+}
+
+/* MapLibre Overrides */
+.maplibregl-control-container {
+  /* Adjust if you want to reposition or hide specific controls */
+}
+
+
+
+/* Right-side animations - only for notifications container */
+.notifications-container .container-animation.uncover .face.front {
+  transform: translateX(0);
+  z-index: 2;
+}
+
+.notifications-container .container-animation.uncover .face.back {
+  transform: scale(0.8);
+  opacity: 0.9;
+  z-index: 1;
+}
+
+/* Right-side animation for notifications */
+.notifications-container .container-animation.uncover.show-back .face.front {
+  transform: translateX(100%); /* Move right instead of left */
+}
+
+.notifications-container .container-animation.uncover.show-back .face.back {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Notification content styling */
+.notification-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.notification-message {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.notification-time {
+  color: #666;
+  font-size: 0.9em;
+  margin-left: 16px;
+}
+
+/* Type-specific notification styles */
+.notification-alert {
+  border-left: 4px solid #ff4444;
+}
+
+.notification-warning {
+  border-left: 4px solid #ffbb33;
+}
+
+.notification-info {
+  border-left: 4px solid #33b5e5;
+}
+
+.notification-status {
+  border-left: 4px solid #00C851;
+}
+
+
+
+/* Camera container and aspect ratio handling */
+.camera-container {
+  width: 100%;
+  padding: 16px;  /* Increased padding for more inset */
+  background: #E5E5E5; /* Matching list-header background color */
+}
+
+/* This maintains 16:9 aspect ratio */
+.camera-frame {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 9/16 = 0.5625 */
+  background: #000;
+  overflow: hidden;
+  border: 1px solid #D1D1D1; /* Matching list-header border color */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: adds subtle depth */
+}
+
+.camera-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Style for Unity WebGL canvas */
+.camera-content canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* This maintains aspect ratio of the actual feed */
+}
+
+/* Placeholder styling */
+.camera-placeholder {
+  color: #666;
+  font-size: 1.2em;
+  text-align: center;
+}
+
+/* Modify the back face to accommodate camera */
+.notifications-container .face.back {
+  display: flex;
+  flex-direction: column;
+}
+
+.notifications-container .face.back .list {
+  flex: 1;
+  min-height: 0; /* Required for Firefox */
+}
+
+/* Ensure proper sizing in the notifications container */
+.notifications-container .camera-container {
+  flex-shrink: 0; /* Prevent camera from being compressed */
+}
+/* END Camera container and aspect ratio handling */
