@@ -1,4 +1,3 @@
-import React from 'react';
 import { useShips } from './ShipContext.jsx';
 
 const ConningInfo = () => {
