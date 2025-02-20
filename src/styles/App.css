@@ -1,3 +1,90 @@
+/* CSS Variables & Theme */
+:root {
+  /* Core Colors */
+  --color-primary: #007bff;
+  --color-primary-hover: #0056b3;
+  --color-secondary: #6c757d;
+  --color-success: #00C851;
+  --color-danger: #ff4444;
+  --color-warning: #ffbb33;
+  --color-info: #33b5e5;
+
+  /* Background Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #e5e5e5;
+  --bg-camera: #000000;
+  --bg-highlight: #E8F0FE; /* For hoover */
+
+  /* Text Colors */
+  --text-primary: #213547;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+
+  /* Border Colors */
+  --border-color: #e0e0e0;
+  --border-color-strong: #d1d1d1;
+
+  /* UI Elements */
+  --button-bg: #f9f9f9;
+  --button-hover-bg: #f0f0f0;
+  --header-button-hover-bg: #f0f0f0;
+  --button-active-bg: #e0e0e0;
+  --link-color: #646cff;
+  --link-hover-color: #535bf2;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  /* Typography */
+  --font-family-base: 'Rubik', sans-serif;
+  --font-family-mono: 'Roboto Mono', monospace;
+  --font-size-base: 1rem;
+  --line-height-base: 1.5;
+
+  /* Layout */
+  --header-height: 56px;
+  --container-padding: 16px;
+}
+
+/* Dark Mode Colors (system triggered)*/
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Core Colors - Dark Theme */
+    --color-primary: #0d6efd;
+    --color-primary-hover: #0b5ed7;
+
+    /* Background Colors */
+    --bg-primary: #242424;
+    --bg-secondary: #2f2f2f;
+    --bg-tertiary: #212020;
+    --bg-highlight: #123875;
+
+    /* Text Colors */
+    --text-primary: rgba(255, 255, 255, 0.87);
+    --text-secondary: rgba(255, 255, 255, 0.60);
+    --text-muted: rgba(255, 255, 255, 0.40);
+
+    /* Border Colors */
+    --border-color: #404040;
+    --border-color-strong: #505050;
+
+    /* UI Elements */
+    --button-bg: #1a1a1a;
+    --button-hover-bg: #2a2a2a;
+    --header-button-hover-bg: #625b5b;
+    --button-active-bg: #3a3a3a;
+    --link-color: #747bff;
+    --link-hover-color: #8285ff;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
+}
+
+
 /* Reset & Base Styles */
 * {
   margin: 0;
@@ -5,31 +92,16 @@
   box-sizing: border-box;
 }
 
-
-/* CSS Variables & Root Styles */
-:root {
-  /* Typography */
-  font-family: Rubik, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  /* Color Theme */
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  /* Font Rendering */
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  /* Debug Helpers */
-  --debug-borders: none; /* Change to solid to enable debug */
+body, html {
+  height: 100%;
+  width: 100%;
+  font-family: var(--font-family-base), sans-serif;
+  line-height: var(--line-height-base);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 }
 
-
-/* Layout */
+/* BEGIN LAYOUT */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -48,28 +120,172 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
-/* End Layout */
+/* END LAYOUT */
 
 
-/* Typography and Links */
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* BEGIN CONTAINER SETUP */
+/* Whole view/page */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: hidden;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+/* Page under header */
+.internal-container {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  flex-direction: row;
+  margin: 0;
+  padding: 0;
 }
 
-a:hover {
-  color: #535bf2;
+.content-wrapper {
+  height: 100%;
+  position: relative;
+  perspective: 2000px;
 }
-/* End Typography and Links */
+
+/* Map container */
+.container-50 {
+  width: 50%;
+  display: flex;          /* V-stack header and list*/
+  flex-direction: column; /* V-stack header and list*/
+  height: 100vh;           /* BUG:Make sure this is right for scrolling*/
+  max-height: 100%;
+  background-color: #bbe8e5;
+  overflow: hidden;  /* DEBUG */
+}
+
+/* This is the container that houses the 25% width and full window height  */
+.container-25 {
+  width: 25%;
+  display: flex;          /* V-stack header and list*/
+  flex-direction: column; /* V-stack header and list*/
+  height: 100vh;           /* BUG:Make sure this is right for scrolling*/
+  max-height: 100%;
+  background-color: var(--bg-secondary);
+  overflow: hidden;  /* DEBUG */
+}
+/* END CONTAINER SETUP */
 
 
-/* Button Styles */
+/* BEGIN HEADER STYLES*/
+/* Header (For the App, shared across pages)*/
+.header {
+  /*height: var(--header-height);*/
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 16px;
+  width: 100%;
+}
+
+/*TODO: Unused? = Remove*/
+.header-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #e5e5f7;
+  opacity: 0.1;
+  background-image:  radial-gradient(#444cf7 9px, transparent 9px), radial-gradient(#444cf7 3px, #e5e5f7 3px);
+  background-size: 32px 32px;
+  background-position: 0 0,16px 16px;
+}
+
+/*TODO: Fix header button bg/text color in light theme*/
+.header button {
+  color: var(--text-primary);
+  padding: 8px 16px;
+  min-width: 80px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header button:hover {
+  background: var(--bg-highlight);
+}
+
+.header button.active {
+  background: #007bff;
+  color: white;
+  border-color: #0056b3;
+}
+/* END HEADER STYLES*/
+
+
+/* BEGIN LIST STYLES*/
+/* List Components (FleetInfo, Conning, etc)*/
+.list-header {
+  padding: var(--container-padding);
+  background-color: var(--bg-tertiary);
+  font-size: 20px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color-strong);
+  font-weight: bold;
+  color: var(--text-primary);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.list {
+  flex: 1;
+  background-color: var(--bg-primary);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* for scrolling */
+  min-height: 0; /* Required for Firefox */
+}
+
+.list-item {
+  padding: 8px var(--container-padding);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  cursor: pointer;
+  border-radius: 0;
+  transition: background-color 0.2s;
+  display: flex;
+  justify-content: center;
+  font-size: 1.1em;
+}
+
+.list-item:nth-child(odd) {
+  background-color: var(--bg-secondary);
+}
+
+.list-item:hover {
+  background-color: var(--bg-highlight);
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+/* END LIST STYLES*/
+
+
+/* BEGIN BUTTON STYLES */
+/*TODO: Remove? button config*/
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -91,7 +307,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* Back button styling */
+/* (ShipInfo) Back button styling */
 .back-button {
   background: none;
   border: none;
@@ -104,9 +320,10 @@ button:focus-visible {
   margin-right: 8px;
 }
 
+/*TODO: Reconsider this*/
 .back-button:hover {
-  color: #333;
-  background-color: #f0f0f0;
+  color: var(--text-secondary);
+  background-color: var(--bg-highlight);
 }
 
 .back-button {
@@ -114,191 +331,10 @@ button:focus-visible {
   left: 16px;
   margin: 0;
 }
-
-/* End Button Styles */
-
-
-/* Light Theme */
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-
-  a:hover {
-    color: #747bff;
-  }
-
-  button {
-    background-color: #f9f9f9;
-  }
-}
-/* End Light Theme */
+/* END BUTTON STYLES */
 
 
-/* FLEET OVERVIEW Definitions */
-/* Shared Header/Navigation */
-.header {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  padding: 8px;
-  gap: 16px;
-  position: relative;
-}
-
-.header-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #e5e5f7;
-  opacity: 0.1;
-  background-image:  radial-gradient(#444cf7 9px, transparent 9px), radial-gradient(#444cf7 3px, #e5e5f7 3px);
-  background-size: 32px 32px;
-  background-position: 0 0,16px 16px;
-}
-
-.header button {
-  padding: 8px 16px;
-  min-width: 80px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-/* Whole view/page */
-.app-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  left: 0;
-  top: 0;
-  overflow: hidden;
-}
-
-/* Page under header */
-.internal-container {
-  display: flex;
-  flex-direction: row;
-  flex: 1;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;  /* DEBUG */
-}
-
-/* Map container */
-.container-50 {
-  width: 50%;
-  display: flex;          /* V-stack header and list*/
-  flex-direction: column; /* V-stack header and list*/
-  height: 100vh;           /* BUG:Make sure this is right for scrolling*/
-  max-height: 100%;
-  background-color: #bbe8e5;
-  overflow: hidden;  /* DEBUG */
-}
-
-/* Styles for Map.jsx */
-/* Top left corner text */
-.map-text {
-  width: 100%;
-  text-align: left;
-  padding-top: 20px;
-}
-
-/* DELETE */
-.placeholder-text {
-  width: 100%;
-  text-align: center;
-  padding-top: 20px;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-/* Styles for FleetInfo.jsx */
-
-
-/* Style for list header with grey bg  */
-.list-header {
-  padding: 16px;
-  background-color: #E5E5E5;
-  font-weight: bold;
-  font-size: 1.2rem;
-  text-align: center;
-  border-bottom: 1px solid #D1D1D1;
-}
-
-/* Style for list distribution/scrolling  */
-.list {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto; /* scrolling */
-  min-height: 0; /* Required for Firefox */
-}
-
-.list-item {
-  padding: 12px 16px;
-  text-align: center;
-  border: none;
-  background: none;
-  cursor: pointer;
-  border-radius: 0;
-  transition: background-color 0.2s;
-}
-
-.list-item:nth-child(odd) {
-  background-color: #F5F9FF;
-}
-
-.list-item:hover {
-  background-color: #E8F0FE;
-}
-
-.list-item:active {
-  background-color: #D2E3FC;
-}
-
-
-/* DEBUG Borders */
-.container-25 { border: 2px var(--debug-borders) red; }
-.content-wrapper { border: 2px var(--debug-borders) blue; }
-.container-3d { border: 2px var(--debug-borders) green; }
-.face-3d { border: 2px var(--debug-borders) purple; }
-.list-header { border: 2px var(--debug-borders) orange; }
-.list { border: 2px var(--debug-borders) yellow; }
-/* End DEBUG Borders */
-
-
-/* List column styles */
-/* This is the container that houses the 25% width and full window height  */
-.container-25 {
-  width: 25%;
-  display: flex;          /* V-stack header and list*/
-  flex-direction: column; /* V-stack header and list*/
-  height: 100vh;           /* BUG:Make sure this is right for scrolling*/
-  max-height: 100%;
-  background-color: white;
-  overflow: hidden;  /* DEBUG */
-}
-
-.content-wrapper {
-  height: 100%;
-  position: relative;
-  perspective: 2000px;
-}
-
+/* BEGIN ANIMATION STYLE */
 /* Base styles for animations */
 .container-animation {
   position: absolute;
@@ -315,7 +351,22 @@ button:focus-visible {
   flex-direction: column;
   background: white;
 }
+/* Pointer events management */
+.face {
+  pointer-events: none;
+}
 
+.face.front {
+  pointer-events: auto;
+}
+
+.show-back .face.front {
+  pointer-events: none;
+}
+
+.show-back .face.back {
+  pointer-events: auto;
+}
 
 /* Flip animation styles */
 .container-animation.flip {
@@ -333,7 +384,6 @@ button:focus-visible {
 .container-animation.flip.show-back {
   transform: rotateY(180deg);
 }
-
 
 /* Push animation styles */
 .container-animation.push .face {
@@ -355,7 +405,6 @@ button:focus-visible {
 .container-animation.push.show-back .face.back {
   transform: translateX(0);
 }
-
 
 /* Uncover animation styles */
 .container-animation.uncover .face {
@@ -394,204 +443,6 @@ button:focus-visible {
   transform: translateX(-100%) rotate(-2deg);
 }*/
 
-/* END Animation */
-
-
-
-/* Animation toggle button */
-.animation-toggle {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.8em;
-  padding: 4px 8px;
-}
-
-/* Pointer events management */
-.face {
-  pointer-events: none;
-}
-
-.face.front {
-  pointer-events: auto;
-}
-
-.show-back .face.front {
-  pointer-events: none;
-}
-
-.show-back .face.back {
-  pointer-events: auto;
-}
-
-/* Style for list header with grey bg  */
-.list-header {
-  padding: 16px;
-  background-color: #E5E5E5;
-  font-weight: bold;
-  font-size: 1.2rem;
-  text-align: center;
-  border-bottom: 1px solid #D1D1D1;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.list {
-flex: 1 1 0;
-min-height: 0;
-overflow-y: auto;
-display: flex;
-flex-direction: column;
-}
-/* End List column styles */
-
-
-/* Map Styles */
-.map-viewport {
-  position: absolute;  /* Changed from relative */
-  top: 0;             /* Position at top */
-  left: 0;            /* Position at left */
-  width: 100%;
-  height: 100%;       /* Take full height */
-  overflow: auto;     /* For scrollbars */
-  user-select: none;
-  border: 3px solid yellow;
-}
-
-.map-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  aspect-ratio: 1;    /* Force square shape */
-  cursor: grab;
-  border: 3px solid red;
-}
-
-.map-container.grabbing {
-  cursor: grabbing;
-}
-
-/* The text overlay */
-.map-text {
-  z-index: 2;
-  background: rgba(255, 255, 255, 0.8);
-  pointer-events: none;
-  user-select: none;
-  padding: 10px;
-}
-
-.debug-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;  /* Changed from contain */
-  pointer-events: none;  /* Prevent image drag */
-  user-select: none;    /* Prevent image selection */
-}
-
-
-/* Map Layout Styles */
-.map-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.map-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: auto !important; /* Force enable pointer events */
-}
-
-/* Ensure the map and its children can receive pointer events */
-.maplibregl-canvas-container {
-  pointer-events: auto !important;
-}
-
-.maplibregl-canvas {
-  pointer-events: auto !important;
-}
-
-/* Info Overlay */
-.overlay-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.map-text {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 4px;
-  font-size: 14px;
-  line-height: 1.4;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Custom Zoom Controls */
-.map-controls {
-  position: absolute;
-  right: 16px;
-  bottom: 16px;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 8px;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.map-control-button {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: white;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: #333;
-  transition: background-color 0.2s;
-}
-
-.map-control-button:hover {
-  background-color: #f0f0f0;
-}
-
-.map-control-button:active {
-  background-color: #e0e0e0;
-}
-
-.map-control-button:disabled {
-  opacity: 0.5;
-  cursor: default;
-  background-color: white;
-}
-
-/* MapLibre Overrides */
-.maplibregl-control-container {
-  /* Adjust if you want to reposition or hide specific controls */
-}
-
-
-
 /* Right-side animations - only for notifications container */
 .notifications-container .container-animation.uncover .face.front {
   transform: translateX(0);
@@ -613,7 +464,120 @@ flex-direction: column;
   transform: scale(1);
   opacity: 1;
 }
+/* END ANIMATION STYLE */
 
+
+/* BEGIN MAP STYLES */
+.map-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.map-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  aspect-ratio: 1;    /* Force square shape */
+  cursor: grab;
+  /*border: 3px solid red;*/
+  width: 100%;
+  height: 100%;
+  pointer-events: auto !important; /* Force enable pointer events */
+}
+
+.map-container.grabbing {
+  cursor: grabbing;
+}
+/* Ensure the map and its children can receive pointer events */
+.maplibregl-canvas-container {
+  pointer-events: auto !important;
+}
+
+.maplibregl-canvas {
+  pointer-events: auto !important;
+}
+/* MapLibre Overrides */
+.maplibregl-control-container {
+  /* Adjust to reposition or hide specific controls */
+}
+
+/* Info Overlay */
+.overlay-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* TODO: Clean up */
+/* Overlay text style */
+.map-text {
+  width: 100%;
+  text-align: left;
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 12px;
+  font-size: 18px;
+  color: black;
+  text-shadow:
+          -1px -1px 0 ghostwhite,
+          -1px 0 0 ghostwhite,
+          -1px 1px 0 ghostwhite,
+          0 -1px 0 ghostwhite,
+          0 1px 0 ghostwhite,
+          1px -1px 0 ghostwhite,
+          1px 0 0 ghostwhite,
+          1px 1px 0 ghostwhite;
+  line-height: 1.4;
+  font-weight: 600;
+  font-style: italic;
+  font-family: "Open Sans", sans-serif;
+  opacity: 0.75;
+}
+
+/* Ensure the mini map container maintains square aspect ratio */
+.minimap-container {
+  position: relative;
+  padding-bottom: 100%; /* Creates a square aspect ratio */
+}
+
+.minimap-container > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.map-container-main {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.map-container-mini {
+  width: 300px;
+  height: 300px;
+  position: relative;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.map-instance {
+  width: 100%;
+  height: 100%;
+}
+/* END MAP STYLES */
+
+
+/* BEGIN RIGHT COLUMN STYLES */
 /* Notification content styling */
 .notification-content {
   display: flex;
@@ -649,14 +613,15 @@ flex-direction: column;
 .notification-status {
   border-left: 4px solid #00C851;
 }
+/* END RIGHT COLUMN STYLES */
 
 
-
+/* BEGIN CAMERA CONTAINER STYLES */
 /* Camera container and aspect ratio handling */
 .camera-container {
   width: 100%;
   padding: 16px;  /* Increased padding for more inset */
-  background: #E5E5E5; /* Matching list-header background color */
+  background: var(--bg-tertiary); /* Matching list-header background color */
 }
 
 /* This maintains 16:9 aspect ratio */
@@ -695,6 +660,7 @@ flex-direction: column;
   text-align: center;
 }
 
+/* Camera container and aspect ratio handling */
 /* Modify the back face to accommodate camera */
 .notifications-container .face.back {
   display: flex;
@@ -710,4 +676,158 @@ flex-direction: column;
 .notifications-container .camera-container {
   flex-shrink: 0; /* Prevent camera from being compressed */
 }
-/* END Camera container and aspect ratio handling */
+/* END CAMERA CONTAINER STYLES */
+
+
+/* BEGIN SHIP OVERVIEW STYLES */
+/* Layout for ship view */
+.ship-view {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 56px); /* Adjust based on header height */
+  overflow: hidden;
+}
+
+/* Camera container taking full width */
+.container-100 {
+  width: 100%;
+  background: #000;
+}
+
+.camera-wrapper {
+  width: 100%;
+  max-height: 50vh; /* Limit maximum height */
+  position: relative;
+  overflow: hidden;
+}
+
+/* Columns container (For lower portion of Ship Overview page) */
+.columns-container {
+  display: flex;
+  flex: 1;
+  min-height: 0; /* Important for proper scrolling */
+}
+
+/* Container 25 overwrite*/
+/* TODO: Consider remove */
+.container-25 {
+  flex: 1;
+  border-right: 1px solid #e0e0e0;
+  min-height: 0; /* Important for proper scrolling */
+}
+
+/* BEGIN CONTROL MODE STYLES */
+/* Control mode button */
+.control-mode-button {
+  margin: 16px;
+  padding: 12px;
+  background-color: #f0f0f0;
+  border: 2px solid #333;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.control-mode-button:hover {
+  background-color: #e0e0e0;
+}
+
+/* When in control mode */
+.control-mode-button.active {
+  background-color: #ff0000;
+  color: white;
+  border-color: #ff0000;
+}
+
+/* When in control mode */
+.control-mode .camera-wrapper {
+  border: 4px solid #ff0000;
+}
+
+/* Control mode indicator in header */
+.control-mode-indicator {
+  position: absolute;
+  right: 16px;
+  color: #ff0000;
+  font-weight: bold;
+  padding: 8px 16px;
+  border: 2px solid #ff0000;
+  border-radius: 4px;
+}
+/* END CONTROL MODE STYLES */
+
+/* Containers for different views */
+.radar-container,
+.minimap-container,
+.model-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  min-height: 0; /* Important for proper scrolling */
+}
+/* END SHIP OVERVIEW STYLES */
+
+
+/* BEGIN CONNING INFO STYLES (for ship overview) */
+.conning-info {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.data-section {
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.data-section:last-child {
+  border-bottom: none;
+}
+
+.section-header {
+  padding: 8px 16px;
+  font-weight: bold;
+  color: #666;
+  background-color: var(--bg-tertiary);
+  font-size: 0.9em;
+  text-transform: uppercase;
+}
+
+.item-label {
+  color: #333;
+  font-weight: 500;
+}
+
+.item-value {
+  color: #000;
+  font-weight: 600;
+  font-family: 'Roboto Mono', monospace; /* For better number alignment */
+}
+/* END CONNING INFO STYLES */
+
+
+/* Placeholder styling */
+/* TODO: Remove dependency */
+.placeholder {
+  color: #666;
+  font-size: 1.2em;
+  text-align: center;
+  padding: 20px;
+}
+
+
+/* BEGIN TEXT STYLES */
+/* For the app title in header */
+.title {
+  position: absolute;
+  left: 16px;
+  text-align: start;
+  font-size: 24px;
+  font-weight: bold;
+  pointer-events: none;
+}
+/* END TEXT STYLES */
+
