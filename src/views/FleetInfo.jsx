@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useShips } from '../components/ShipContext';
 
 // TODO: Fix back button overlap when small width
 // TODO: OK - Change content for Ship Info
 // TODO: OK - Ship Info: Ship name reset too soon.
 // TODO: Potential for backside: Create gauges and animated things to represent conning
 
-
-import { useShips } from '../components/ShipContext';
 
 const FleetInfo = () => {
     const { ships, selectedShipId, selectShip } = useShips();
