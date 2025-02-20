@@ -5,24 +5,15 @@ import Notifications from '../views/Notifications';
 
 const FleetOverview = () => {
     return (
-        <div className="app-container">
-            {/* Header/Navigation */}
-            <div className="header">
-                <button>Fleet</button>
-                <button>Ship</button>
-            </div>
+        <div className="internal-container">
+            {/* Left Column - Fleet Info */}
+            <FleetInfo />
 
-            {/* Main Content Container */}
-            <div className="internal-container">
-                {/* Left Column - Fleet Info */}
-                <FleetInfo />
+            {/* Center Column - Map */}
+            <Map />
 
-                {/* Center Column - Map */}
-                <Map />
-
-                {/* Right Column - Notification center */}
-                <Notifications />
-            </div>
+            {/* Right Column - Notification center */}
+            <Notifications />
         </div>
     );
 };
