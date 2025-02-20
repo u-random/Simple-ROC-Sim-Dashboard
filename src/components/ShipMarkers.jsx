@@ -1,3 +1,5 @@
+// This file creates SVG icons and labels to act as ship marker
+// It uses the data from ShipContext
 
 // TODO: Fix bug with ship markers disappearing when stacked close together
 // TODO: Zoom to selected ship?

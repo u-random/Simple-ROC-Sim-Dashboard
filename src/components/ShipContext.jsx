@@ -1,3 +1,6 @@
+// This file generate and update JSON style mock ship data
+// To simulate actual output from simulator
+
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 // TODO: Setup system that allows for static ships in addition to stream from Unity

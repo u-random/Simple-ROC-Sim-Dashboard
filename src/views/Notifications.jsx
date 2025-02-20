@@ -1,3 +1,7 @@
+// This is the file for the right column view of the Fleet Overview page
+// Has two variations: A notification list and then more ship specific stuff
+// Has an uncover type animation between variations, symmetric to FleetInfo
+
 import { useShips } from '../components/ShipContext';
 import CameraView from '../components/CameraView';
 import { useState, useEffect } from 'react';
@@ -30,7 +34,7 @@ const Notifications = () => {
         if (isAnimating) {
             const timer = setTimeout(() => {
                 setIsAnimating(false);
-            }, 600); // Match your CSS animation duration
+            }, 600); // Match the CSS animation duration
             return () => clearTimeout(timer);
         }
     }, [isAnimating]);

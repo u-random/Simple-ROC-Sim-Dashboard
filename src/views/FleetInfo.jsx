@@ -1,3 +1,7 @@
+// This is the file for the left column view of the Fleet Overview page
+// Has two variations: A list of ships and then ship specific info if a ship is selected
+// Has an uncover type animation between variations
+
 import { useState, useEffect } from 'react';
 import { useShips } from '../components/ShipContext';
 
@@ -33,7 +37,7 @@ const FleetInfo = () => {
         if (isAnimating) {
             const timer = setTimeout(() => {
                 setIsAnimating(false);
-            }, 600); // Match your CSS animation duration
+            }, 600); // Match the CSS animation duration
             return () => clearTimeout(timer);
         }
     }, [isAnimating]);

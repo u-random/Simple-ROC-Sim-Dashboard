@@ -1,3 +1,6 @@
+// This file is the stand-alone Map view
+// Using a configured MapLibre/MapTiles to draw the actual map
+
 // TODO: Add centering button
 // TODO: Add in Kystverket ocean depth contour/colors as GeoJSON overlay
 // TODO: Fix selection of markers in z stack
