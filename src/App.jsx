@@ -9,7 +9,9 @@ import { MapProvider } from './components/MapContext';
 // TODO: OK - Add toggle between views
 // TODO: Disallow view switch when in control mode
 // TODO: In regard to the above, have an alert to say "Going to Fleet Overview will exit Control Mode. Are you sure?"
+// TODO: In Fleet View button, add code to turn isControlMode off.
 
+// TODO: 25 feb: Set up a connection to ship id here, to pass on to fleetoverview and shipoverview, to use in camera/notification/Fleetinfo etc
 
 
 function App() {

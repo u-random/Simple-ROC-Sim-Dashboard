@@ -26,7 +26,7 @@
   --border-color-strong: #d1d1d1;
 
   /* UI Elements */
-  --button-bg: #f9f9f9;
+  --button-bg: #efeeee;
   --button-hover-bg: #f0f0f0;
   --header-button-hover-bg: #f0f0f0;
   --button-active-bg: #e0e0e0;
@@ -38,7 +38,7 @@
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
 
   /* Typography */
-  --font-family-base: 'Rubik', sans-serif;
+  --font-family-base: 'Rubik', -apple-system, sans-serif;
   --font-family-mono: 'Roboto Mono', monospace;
   --font-size-base: 1rem;
   --line-height-base: 1.5;
@@ -173,7 +173,7 @@ body {
   flex-direction: column; /* V-stack header and list*/
   height: 100vh;           /* BUG:Make sure this is right for scrolling*/
   max-height: 100%;
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-primary);
   overflow: hidden;  /* DEBUG */
 }
 /* END CONTAINER SETUP */
@@ -183,7 +183,7 @@ body {
 /* Header (For the App, shared across pages)*/
 .header {
   /*height: var(--header-height);*/
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
   padding: 8px;
   display: flex;
@@ -211,6 +211,7 @@ body {
 /*TODO: Fix header button bg/text color in light theme*/
 .header button {
   color: var(--text-primary);
+  background-color: var(--button-bg);
   padding: 8px 16px;
   min-width: 80px;
   height: 40px;
@@ -234,9 +235,9 @@ body {
 /* BEGIN LIST STYLES*/
 /* List Components (FleetInfo, Conning, etc)*/
 .list-header {
-  padding: var(--container-padding);
   background-color: var(--bg-tertiary);
-  font-size: 20px;
+  padding: 8px;
+  font-size: 24px;
   text-align: center;
   border-bottom: 1px solid var(--border-color-strong);
   font-weight: bold;
@@ -293,7 +294,6 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -617,24 +617,27 @@ button:focus-visible {
 
 
 /* BEGIN CAMERA CONTAINER STYLES */
-/* Camera container and aspect ratio handling */
-.camera-container {
+.camera-container{
   width: 100%;
-  padding: 16px;  /* Increased padding for more inset */
-  background: var(--bg-tertiary); /* Matching list-header background color */
+  padding: 16px;
+  background: var(--bg-tertiary);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* This maintains 16:9 aspect ratio */
+/* Camera frame base styles */
 .camera-frame {
   position: relative;
   width: 100%;
-  padding-top: 56.25%; /* 9/16 = 0.5625 */
   background: #000;
   overflow: hidden;
-  border: 1px solid #D1D1D1; /* Matching list-header border color */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: adds subtle depth */
+  border: 1px solid #D1D1D1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Camera content */
 .camera-content {
   position: absolute;
   top: 0;
@@ -644,21 +647,81 @@ button:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden; /* Prevent any overflow from the image */
 }
-
-/* Style for Unity WebGL canvas */
-.camera-content canvas {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* This maintains aspect ratio of the actual feed */
-}
-
+/* MERGE ABOVE and BELOW */
 /* Placeholder styling */
-.camera-placeholder {
+.camera-placeholder-text {
   color: #666;
   font-size: 1.2em;
   text-align: center;
+  position: relative; /* Stays above the image */
+  z-index: 1; /* Ensures placeholder is on top */
 }
+
+.aspect-ratio-ultrawide .camera-frame {
+  aspect-ratio: 64 / 27; /* Updated to 64:27 (≈2.37:1) from 21:9 */
+  max-height: 60vh;
+}
+
+/* Image styling for the texture */
+.camera-texture {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Cover ensures the frame is fully filled */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Aspect ratio handling with modern property */
+.aspect-ratio-standard .camera-frame {
+  aspect-ratio: 16 / 9;
+}
+
+
+/* Control mode highlight */
+.control-mode .camera-frame {
+  border-color: var(--color-danger);
+  border-width: 1px;
+}
+
+/* Fallback for older browsers */
+@supports not (aspect-ratio: 16 / 9) {
+  .aspect-ratio-standard .camera-frame::before {
+    content: "";
+    display: block;
+    padding-top: 56.25%; /* 9/16 = 0.5625 = 56.25% */
+  }
+
+  .aspect-ratio-ultrawide .camera-frame::before {
+    content: "";
+    display: block;
+    padding-top: 42.1875%; /* 27/64 = 0.421875 = 42.1875% */
+  }
+}
+
+/* Existing styles remain the same, add this below camera-content styles */
+
+.camera-content img.camera-texture {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Maintains aspect ratio, fits within the frame */
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+/* Ensure the placeholder stays on top of the image if needed */
+.camera-placeholder-text {
+  color: #666;
+  font-size: 1.2em;
+  text-align: center;
+  position: relative; /* Stays above the image */
+  z-index: 1; /* Ensures placeholder is on top */
+}
+
+
 
 /* Camera container and aspect ratio handling */
 /* Modify the back face to accommodate camera */
@@ -696,7 +759,7 @@ button:focus-visible {
 
 .camera-wrapper {
   width: 100%;
-  max-height: 50vh; /* Limit maximum height */
+  /*max-height: 50vh; /* Limit maximum height */
   position: relative;
   overflow: hidden;
 }
@@ -826,6 +889,14 @@ button:focus-visible {
   left: 16px;
   text-align: start;
   font-size: 24px;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.sub-title {
+  padding-left: 16px;
+  text-align: start;
+  font-size: 20px;
   font-weight: bold;
   pointer-events: none;
 }

@@ -62,7 +62,7 @@ const Map = ({ minimap = false }) => {
         if (!map || layerConfigured.current) return;
 
         try {
-            // Add ship marker images
+            // Default ship marker image
             const shipIcon = new Image();
             shipIcon.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`
                 <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
@@ -77,6 +77,7 @@ const Map = ({ minimap = false }) => {
                 };
             });
 
+            // Alternate ship marker image (Orange if selected)
             const selectedIcon = new Image();
             selectedIcon.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`
                 <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">

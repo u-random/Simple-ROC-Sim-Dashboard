@@ -102,6 +102,7 @@ const Notifications = () => {
                         {displayedShipId &&
                             <CameraView
                                 shipId={displayedShipId}
+                                aspectRatio="standard"
                             />
                         }
 
