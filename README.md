@@ -2,6 +2,8 @@
 
 This is the working directory for the graphical user interface. 
 
+[![Video Title](https://i.vimeocdn.com/video/1063860149_640.jpg)](https://vimeo.com/1063860149)
+
 ## Screenshots:
 ### Fleet Overview: Light mode
 ![image](https://github.com/user-attachments/assets/395acd25-615d-47af-b4ec-8e610e865778)
