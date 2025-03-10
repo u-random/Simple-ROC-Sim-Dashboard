@@ -85,13 +85,13 @@ const FleetInfo = () => {
                                 Position: {displayedShip?.position || 'N/A'}
                             </div>
                             <div className="list-item">
-                                Speed: {displayedShip ? `${displayedShip.speed.toFixed(1)} knots` : 'N/A'}
+                                Speed: {displayedShip ? `${displayedShip.motion.speed.toFixed(1)} knots` : 'N/A'}
                             </div>
                             <div className="list-item">
-                                Course: {displayedShip ? `${displayedShip.course.toFixed(1)}°` : 'N/A'}
+                                Course: {displayedShip ? `${displayedShip.motion.course.toFixed(1)}°` : 'N/A'}
                             </div>
                             <div className="list-item">
-                                Heading: {displayedShip ? `${displayedShip.heading.toFixed(1)}°` : 'N/A'}
+                                Heading: {displayedShip ? `${displayedShip.motion.heading.toFixed(1)}°` : 'N/A'}
                             </div>
                         </div>
                     </div>

@@ -36,13 +36,13 @@ export const MapProvider = ({ children }) => {
                         type: 'Feature',
                         geometry: {
                             type: 'Point',
-                            coordinates: [ship.longitude, ship.latitude]
+                            coordinates: [ship.position.longitude, ship.position.latitude]
                         },
                         properties: {
                             id: ship.id,
                             name: ship.name,
-                            heading: ship.heading,
-                            speed: ship.speed
+                            heading: ship.motion.heading,
+                            speed: ship.motion.speed
                         }
                     }))
                 });
