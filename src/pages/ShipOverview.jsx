@@ -7,6 +7,8 @@ import MiniMap from '../views/MiniMap';
 import Render3D from '../views/Render3D';
 import CameraView from '../components/CameraView';
 
+import { useShips } from '../components/ShipContext';
+
 // TODO: Control Mode read input
 // TODO: Control Mode ESC for exit shortcut
 // TODO: Currently viewing ship label, and drop down list/menu
@@ -15,12 +17,16 @@ import CameraView from '../components/CameraView';
 
 
 const ShipOverview = ({ isControlMode, setIsControlMode }) => {
+    const { selectedShipId, ships } = useShips();
+    // Get ship from Ship view.
+    const displayedShip = ships.find(ship => ship.id === selectedShipId);
+
     return (
         <div className="internal-container ship-view">
-            <div className="sub-title">Currently Viewing</div>
+            <div className="sub-title">Currently Viewing: {displayedShip?.name || 'N/A'}</div>
             {/* Full Width Camera Container */}
             <CameraView
-                shipId="vessel1"
+                shipId={selectedShipId}
                 aspectRatio="ultrawide"
                 isControlMode={isControlMode}
                 isShipView={true}
