@@ -1,19 +1,36 @@
+// src/views/Notifications.tsx
 // This is the file for the right column view of the Fleet Overview page
 // Has two variations: A notification list and then more ship specific stuff
 // Has an uncover type animation between variations, symmetric to FleetInfo
 
+// TODO: Crop camera view
+
+
 import { useShips } from '../components/ShipContext';
 import CameraView from '../components/CameraView';
 import { useState, useEffect } from 'react';
+//import { ShipStatus } from '../types/Types';
+
+// Define notification type
+interface Notification {
+    id          : number;
+    type        : 'alert' | 'info' | 'warning' | 'status';
+    message     : string;
+    timestamp   : string;
+}
+
+// Define notifications by ship ID map
+// TODO: Get notifications from Unity (incorporate in Ship interface)
+interface ShipNotifications {
+    [key: number]: Notification[];
+}
 
 const Notifications = () => {
     const { selectedShipId, ships } = useShips();
     const [displayedShipId, setDisplayedShipId] = useState(null);
     const [isAnimating, setIsAnimating] = useState(false);
 
-
-    // SECTION Animation Delay
-    // Update displayed content with delay
+    // Update displayed content with delay - exactly like FleetInfo
     useEffect(() => {
         if (selectedShipId) {
             // When selecting a ship, update immediately
@@ -38,36 +55,46 @@ const Notifications = () => {
             return () => clearTimeout(timer);
         }
     }, [isAnimating]);
-    // END SECTION Animation Delay
 
 
-    // SECTION Mock Data
+
+
+// Hard coded notifications
+    // TODO: move out of here
     // Mock data structure
-    const generalNotifications = [
+    const generalNotifications: Notification[] = [
         { id: 1, type: 'alert', message: 'Maneuvering', timestamp: '10:00' },
         { id: 2, type: 'info', message: 'Docking', timestamp: '10:30' },
         { id: 3, type: 'warning', message: 'Loading', timestamp: '11:00' }
     ];
 
-    const shipNotifications = {
-        1: [
+    // Use proper ship IDs that match your ShipContext
+    const shipNotifications: ShipNotifications = {
+        101: [
             { id: 1, type: 'status', message: 'In transit', timestamp: '10:00' },
             { id: 2, type: 'status', message: 'Docked', timestamp: '10:00' },
             { id: 3, type: 'status', message: 'Loading', timestamp: '07:00' }
         ],
-        2: [
+        102: [
             { id: 1, type: 'alert', message: 'Speed warning', timestamp: '09:30' },
             { id: 2, type: 'info', message: 'Approaching dock', timestamp: '09:45' }
+        ],
+        1000: [
+            { id: 1, type: 'alert', message: 'Approaching shallow water', timestamp: '10:15' },
+            { id: 2, type: 'warning', message: 'Speed warning', timestamp: '10:20' }
+        ],
+        1001: [
+            { id: 1, type: 'info', message: 'Course adjusted', timestamp: '09:55' },
+            { id: 2, type: 'status', message: 'On schedule', timestamp: '10:00' }
         ]
     };
 
-    const currentShipNotifications = displayedShipId && shipNotifications[displayedShipId]
-        ? shipNotifications[displayedShipId]
-        : [];
-    // END SECTION Mock Data
+    // Safely get notifications for the displayed ship (using displayedShipId instead of selectedShipId)
+    const currentShipNotifications =
+        displayedShipId !== null && shipNotifications[displayedShipId]
+            ? shipNotifications[displayedShipId]
+            : [];
 
-
-    // SECTION HTML
     return (
         <div className="container-25 notifications-container">
             <div className="content-wrapper">
@@ -84,12 +111,12 @@ const Notifications = () => {
                                     className={`list-item notification-${notification.type}`}
                                 >
                                     <div className="notification-content">
-                                        <span className="notification-message">
-                                            {notification.message}
-                                        </span>
+                    <span className="notification-message">
+                      {notification.message}
+                    </span>
                                         <span className="notification-time">
-                                            {notification.timestamp}
-                                        </span>
+                      {notification.timestamp}
+                    </span>
                                     </div>
                                 </div>
                             ))}
@@ -98,13 +125,11 @@ const Notifications = () => {
 
                     {/* Back face - Ship Specific View */}
                     <div className="face back">
-                        {/* Camera View - Note the +1 for vessel number */}
-                        {displayedShipId &&
-                            <CameraView
-                                shipId={displayedShipId}
-                                aspectRatio="standard"
-                            />
-                        }
+                        {/* Camera View */}
+                        <CameraView
+                            shipId={displayedShipId}
+                            aspectRatio="standard"
+                        />
 
                         {/* Ship Notifications */}
                         <div className="list-header">
@@ -118,21 +143,21 @@ const Notifications = () => {
                                         className={`list-item notification-${notification.type}`}
                                     >
                                         <div className="notification-content">
-                                            <span className="notification-message">
-                                                {notification.message}
-                                            </span>
+                      <span className="notification-message">
+                        {notification.message}
+                      </span>
                                             <span className="notification-time">
-                                                {notification.timestamp}
-                                            </span>
+                        {notification.timestamp}
+                      </span>
                                         </div>
                                     </div>
                                 ))
                             ) : (
                                 <div className="list-item">
                                     <div className="notification-content">
-                                        <span className="notification-message">
-                                            No actions from this ship
-                                        </span>
+                    <span className="notification-message">
+                      No actions for this ship
+                    </span>
                                     </div>
                                 </div>
                             )}
@@ -143,5 +168,5 @@ const Notifications = () => {
         </div>
     );
 };
-// END SECTION HTML
+
 export default Notifications;
