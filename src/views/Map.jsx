@@ -3,7 +3,8 @@
 
 // TODO: Add centering button
 // TODO: Add in Kystverket ocean depth contour/colors as GeoJSON overlay
-// TODO: Fix selection of markers in z stack
+// TODO: Fix selection of markers in z stack (toggle)
+// TODO: Consider new system for markers with many ships, can get cluttered with 20+ (due to maker size)
 
 import { useRef, useEffect, useCallback } from 'react';
 import maplibrejs from 'maplibre-gl';
@@ -12,6 +13,7 @@ import { useShips } from '../components/ShipContext';
 import { useMap } from '../components/MapContext';
 
 
+// TODO: Implement with interface from Types
 // Constants
 const MAP_CENTER = [10.570455, 59.425565];
 const MAP_SIZE_KM = 12;
@@ -117,6 +119,7 @@ const Map = ({ minimap = false }) => {
                 }
             });
 
+            // TODO: Save last selected ship
             // Add click handlers for main map
             if (!minimap) {
                 map.on('click', `ships-layer-${mapId}`, (e) => {

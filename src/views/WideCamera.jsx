@@ -1,4 +1,4 @@
-import CameraView from "../components/CameraView.jsx";
+import CameraView from "../components/CameraView";
 
 
 const WideCamera = ({ isControlMode }) => {
