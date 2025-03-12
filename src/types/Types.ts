@@ -33,6 +33,8 @@ export interface ShipData {
         // Additional optional sensor data
         rpm?        : number;
         fuelLevel?  : number;
+        engine1LocalRotation?: number;
+        engine2LocalRotation?: number;
         // Add other sensor data as needed
     };
     cameraFeed?     : string;
@@ -44,4 +46,15 @@ export interface ShipSummary {
     name        : string;
     status      : ShipStatus;
     connected   : boolean;
+}
+
+
+// Type for constants
+interface MapConstants {
+    MAP_CENTER          : number[];
+    MAP_SIZE_KM         : number;
+    KM_PER_DEGREE_LAT   : number;
+    KM_PER_DEGREE_LON   : number;
+    LAT_OFFSET          : number;
+    LON_OFFSET          : number;
 }

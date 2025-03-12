@@ -1,7 +1,7 @@
 // ShipContext.tsx - Provides ship data context for the application
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { ShipData, ShipStatus } from '../types/Types';
+import { ShipData, ShipStatus, MapConstants } from '../types/Types';
 import MockShipSimulator from '../utils/MockShipSimulator';
 import { staticShips } from '../utils/StaticShips';
 
@@ -16,15 +16,7 @@ const KM_PER_DEGREE_LON : number    = KM_PER_DEGREE_LAT * Math.cos(MAP_CENTER[1]
 const LAT_OFFSET        : number    = MAP_SIZE_KM / (2 * KM_PER_DEGREE_LAT);
 const LON_OFFSET        : number    = MAP_SIZE_KM / (2 * KM_PER_DEGREE_LON);
 
-// Type for constants
-interface MapConstants {
-    MAP_CENTER          : number[];
-    MAP_SIZE_KM         : number;
-    KM_PER_DEGREE_LAT   : number;
-    KM_PER_DEGREE_LON   : number;
-    LAT_OFFSET          : number;
-    LON_OFFSET          : number;
-}
+
 
 // Define the context type
 interface ShipContextType {
