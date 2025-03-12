@@ -82,7 +82,9 @@ const FleetInfo = () => {
 
                         <div className="list">
                             <div className="list-item">
-                                Position: {displayedShip?.position || 'N/A'}
+                                Position: {displayedShip
+                                ? `${displayedShip.position.latitude.toFixed(4)}°N, ${displayedShip.position.longitude.toFixed(4)}°E`
+                                : 'N/A'}
                             </div>
                             <div className="list-item">
                                 Speed: {displayedShip ? `${displayedShip.motion.speed.toFixed(1)} knots` : 'N/A'}
