@@ -1,6 +1,4 @@
-// This is for the main ship view
-
-import WideCamera from '../views/WideCamera';
+import React from 'react';
 import Conning from '../views/Conning';
 import Radar from '../views/Radar';
 import MiniMap from '../views/MiniMap';
@@ -9,17 +7,21 @@ import CameraView from '../components/CameraView';
 
 import { useShips } from '../components/ShipContext';
 
+interface ShipOverviewProps {
+    isControlMode: boolean;
+    setIsControlMode: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 // TODO: Control Mode read input
 // TODO: Control Mode ESC for exit shortcut
 // TODO: Currently viewing ship label, and drop down list/menu
 // TODO: Use last selected ship if no active selection
 // TODO: Config columns-container to not be 50% of height, but to stretch. Camera container should be fixed height though
 
-
-const ShipOverview = ({ isControlMode, setIsControlMode }) => {
+const ShipOverview: React.FC<ShipOverviewProps> = ({ isControlMode, setIsControlMode }) => {
     const { selectedShipId, ships } = useShips();
     // Get ship from Ship view.
-    const displayedShip = ships.find(ship => ship.id === selectedShipId);
+    const displayedShip = ships.find((ship) => ship.id === selectedShipId);
 
     return (
         <div className="internal-container ship-view">
