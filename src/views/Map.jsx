@@ -1,33 +1,20 @@
-// This file is the stand-alone Map view
-// Using a configured MapLibre/MapTiles to draw the actual map
+// src/views/Map.jsx - This file is the stand-alone Map view
+// Using a configured MapLibre/MapTiles framework to draw the actual map
 
-// TODO: Add centering button
-// TODO: Add in Kystverket ocean depth contour/colors as GeoJSON overlay
-// TODO: Fix selection of markers in z stack (toggle)
+
 // TODO: Consider new system for markers with many ships, can get cluttered with 20+ (due to maker size)
+// TODO: Add in ocean depth contour/colors as GeoJSON overlay
+// TODO: Fix selection of markers in z stack (toggle)
+// TODO: Add centering button
 
+
+import { MapConstants, MAX_BOUNDS } from '../types/MapConstants'
 import { useRef, useEffect, useCallback } from 'react';
-import maplibrejs from 'maplibre-gl';
+import { useShips } from '../hooks/ShipContext';
+import { useMap } from '../hooks/MapContext';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { useShips } from '../components/ShipContext';
-import { useMap } from '../components/MapContext';
+import maplibrejs from 'maplibre-gl';
 
-
-// TODO: Implement with interface from Types
-// Constants
-const MAP_CENTER = [10.570455, 59.425565];
-const MAP_SIZE_KM = 12;
-const KM_PER_DEGREE_LAT = 111;
-const KM_PER_DEGREE_LON = KM_PER_DEGREE_LAT * Math.cos(MAP_CENTER[1] * Math.PI / 180);
-const LAT_OFFSET = MAP_SIZE_KM / (2 * KM_PER_DEGREE_LAT);
-const LON_OFFSET = MAP_SIZE_KM / (2 * KM_PER_DEGREE_LON);
-const MIN_ZOOM = 9;
-const MAX_ZOOM = 16;
-const INITIAL_ZOOM = 9;
-const MAX_BOUNDS = [
-    [MAP_CENTER[0] - LON_OFFSET, MAP_CENTER[1] - LAT_OFFSET],
-    [MAP_CENTER[0] + LON_OFFSET, MAP_CENTER[1] + LAT_OFFSET]
-];
 
 const Map = ({ minimap = false }) => {
     const mapRef = useRef(null);
@@ -129,6 +116,7 @@ const Map = ({ minimap = false }) => {
                     }
                 });
 
+                // DESELECT SHIP When clicking map
                 map.on('click', (e) => {
                     const features = map.queryRenderedFeatures(e.point, {
                         layers: [`ships-layer-${mapId}`]
@@ -152,11 +140,11 @@ const Map = ({ minimap = false }) => {
         const map = new maplibrejs.Map({
             container: mapRef.current,
             style: `https://api.maptiler.com/maps/topo/style.json?key=${import.meta.env.VITE_OPENMAPTILES_KEY}`,
-            center: MAP_CENTER,
-            zoom: minimap ? INITIAL_ZOOM + 1 : INITIAL_ZOOM,
-            maxBounds: MAX_BOUNDS,
-            minZoom: MIN_ZOOM,
-            maxZoom: MAX_ZOOM,
+            center: MapConstants.MAP_CENTER,
+            zoom: minimap ? MapConstants.INITIAL_ZOOM + 1 : MapConstants.INITIAL_ZOOM,
+            maxBounds: MapConstants.MAX_BOUNDS,
+            minZoom: MapConstants.MIN_ZOOM,
+            maxZoom: MapConstants.MAX_ZOOM,
             preserveDrawingBuffer: true
         });
 
@@ -268,9 +256,9 @@ const Map = ({ minimap = false }) => {
                 {!minimap && (
                     <div className="overlay-layer">
                         <div className="map-text">
-                            Horten - {MAP_SIZE_KM}km x {MAP_SIZE_KM}km
+                            Horten - {MapConstants.MAP_SIZE_KM}km x {MapConstants.MAP_SIZE_KM}km
                             <br/>
-                            Center: {MAP_CENTER[1].toFixed(4)}°N, {MAP_CENTER[0].toFixed(4)}°E
+                            Center: {MapConstants.MAP_CENTER[1].toFixed(4)}°N, {MapConstants.MAP_CENTER[0].toFixed(4)}°E
                         </div>
                     </div>
                 )}

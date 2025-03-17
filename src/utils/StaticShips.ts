@@ -1,8 +1,9 @@
-// StaticShips.ts
-import { ShipData, ShipStatus } from '../types/Types';
+// src/utils/StaticShips.ts - Definition of hard-coded ship objects
 
-// Map center for positioning static ships
-const MAP_CENTER = [10.570455, 59.425565];
+
+import { ShipData, ShipStatus } from '../types/Types';
+import { MAP_CENTER } from '../types/MapConstants';
+
 
 export const staticShips: ShipData[] = [
     {
