@@ -1,20 +1,27 @@
-// This is the file for the left column view of the Fleet Overview page
+// src/views/FleetInfo.jsx - This is the file for the left column view of the Fleet Overview page
 // Has two variations: A list of ships and then ship specific info if a ship is selected
 // Has an uncover type animation between variations
 
-import { useState, useEffect } from 'react';
-import { useShips } from '../components/ShipContext';
 
 // TODO: Fix back button overlap when small width
 // TODO: OK - Change content for Ship Info
 // TODO: OK - Ship Info: Ship name reset too soon.
 // TODO: Potential for backside: Create gauges and animated things to represent conning
+// TODO: use number keys to select top 9 ships in context
+
+
+import useEscapeKey from "../hooks/useEscapeKey.tsx";
+import { useShips } from '../hooks/ShipContext';
+import { useState, useEffect } from 'react';
 
 
 const FleetInfo = () => {
     const { ships, selectedShipId, selectShip } = useShips();
     const [displayedShipId, setDisplayedShipId] = useState(null);
     const [isAnimating, setIsAnimating] = useState(false);
+
+    // Deselect ship with escape key
+    useEscapeKey(() => selectedShipId && selectShip(null));
 
     // Update displayed content with delay
     useEffect(() => {
