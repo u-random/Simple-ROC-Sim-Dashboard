@@ -1,126 +1,171 @@
 // ShipContext.tsx - Provides ship data context for the application
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { ShipData, ShipStatus, MapConstants } from '../types/Types';
+
+// TODO: process.env.NODE_ENV === 'development' set up in ENV file
+// TODO: Use props in ShipProvider input and do a spread on call
+
+
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback, Context } from 'react';
+import { MapConstantsType, MapConstants } from '../types/MapConstants';
+import UnityShipSimulator from "../utils/UnityShipSimulator.ts";
 import MockShipSimulator from '../utils/MockShipSimulator';
 import { staticShips } from '../utils/StaticShips';
-
-// TODO: Consider single source of truth
-// Constants - matching Map.tsx
-const MAP_CENTER        : number[]  = [10.570455, 59.425565];
-const MAP_SIZE_KM       : number    = 10;
-const KM_PER_DEGREE_LAT : number    = 111;
-const KM_PER_DEGREE_LON : number    = KM_PER_DEGREE_LAT * Math.cos(MAP_CENTER[1] * Math.PI / 180);
-
-// Calculate offsets separately for latitude and longitude
-const LAT_OFFSET        : number    = MAP_SIZE_KM / (2 * KM_PER_DEGREE_LAT);
-const LON_OFFSET        : number    = MAP_SIZE_KM / (2 * KM_PER_DEGREE_LON);
+import { ShipData, ShipContextType, ShipProviderProps } from '../types/Types';
 
 
-
-// Define the context type
-interface ShipContextType {
-    ships: ShipData[];
-    selectedShipId: number | null;
-    selectShip: (id: number | null) => void;
-    addShip: (ship: ShipData) => void;
-    updateShip: (ship: ShipData) => void;
-    removeShip: (id: number) => void;
-    constants: MapConstants;
-}
-const ShipContext = createContext<ShipContextType | null>(null);
-
-
-interface ShipProviderProps {
-    children: ReactNode;
-    useMockShips?: boolean;
-}
+const ShipContext: Context<ShipContextType | null> = createContext<ShipContextType | null>(null);
 
 
 export const ShipProvider: React.FC<ShipProviderProps> =
-    ({children, useMockShips = process.env.NODE_ENV === 'development'}) => {
-    // Initialize with static ships only
-    const [ships, setShips] = useState<ShipData[]>(staticShips);
-    const [selectedShipId, setSelectedShipId] = useState<number | null>(null);
-    const [mockSimulator, setMockSimulator] = useState<MockShipSimulator | null>(null);
+    //({children, useMockShips = process.env.NODE_ENV === 'development', ipAddresses = []}) => {
+    ({children, useMockShips = true, connectUnity = false, ipAddresses = []}) => {
+        // Initialize with static ships only
+        const [ships, setShips] = useState<ShipData[]>(staticShips);
+        const [selectedShipId, setSelectedShipId] = useState<number | null>(null);
+        //const [mockSimulator, setMockSimulator] = useState<MockShipSimulator | null>(null);
+        const [simulators, setSimulators] = useState<(MockShipSimulator | UnityShipSimulator)[]>([]);
 
-    // Ship selection handler
-    const selectShip = useCallback((id: number | null) => {
-        setSelectedShipId(id);
-    }, []);
+        const [cameraFeeds, setCameraFeeds] = useState<{[key: string]: string}>({});
+        const cameraSubscriptions = useRef<{[key: string]: Set<(frame: string) => void>}>({});
 
-    // Ship management methods
-    const addShip = useCallback((ship: ShipData) => {
-        setShips(currentShips => {
-            // Check if ship already exists
-            if (currentShips.some(s => s.id === ship.id)) {
-                return currentShips;
-            }
-            return [...currentShips, ship];
-        });
-    }, []);
+        //console.log("useUnityShips", useUnityShips);
 
-    const updateShip = useCallback((updatedShip: ShipData) => {
-        setShips(currentShips =>
-            currentShips.map(ship =>
-                ship.id === updatedShip.id ? updatedShip : ship
-            )
-        );
-    }, []);
+        // Ship selection handler
+        const selectShip = useCallback((id: number | null) => {
+            setSelectedShipId(id);
+        }, []);
 
-    const removeShip = useCallback((id: number) => {
-        setShips(currentShips =>
-            currentShips.filter(ship => ship.id !== id)
-        );
-    }, []);
-
-    // Set up mock ship simulator if enabled
-    React.useEffect(() => {
-        if (useMockShips) {
-            const simulator = new MockShipSimulator({
-                ships,
-                setShips,
-                config: {
-                    shipCount: 5,
-                    updateInterval: 1000,
-                    mapCenter: MAP_CENTER as [number, number],
-                    mapSizeKm: MAP_SIZE_KM,
-                    speedRange: [5, 20]
+        // Ship management methods
+        const addShip = useCallback((ship: ShipData) => {
+            setShips(currentShips => {
+                // Check if ship already exists
+                if (currentShips.some(s => s.id === ship.id)) {
+                    return currentShips;
                 }
+                return [...currentShips, ship];
+            });
+        }, []);
+
+        const updateShip = useCallback((updatedShip: ShipData) => {
+            setShips(currentShips =>
+                currentShips.map(ship =>
+                    ship.id === updatedShip.id ? updatedShip : ship
+                )
+            );
+        }, []);
+
+        const removeShip = useCallback((id: number) => {
+            setShips(currentShips =>
+                currentShips.filter(ship => ship.id !== id)
+            );
+        }, []);
+
+
+        const handleCameraMessage = useCallback((shipId: number, frameData: string) => {
+            console.log(`ShipContext: Received camera frame for ship ${shipId}, length: ${frameData.length}`);
+            setCameraFeeds(prev => {
+                console.log(`ShipContext: Updating camera feeds for ship ${shipId}`);
+                return {...prev, [shipId]: frameData};
             });
 
-            simulator.start();
-            setMockSimulator(simulator);
+            if (cameraSubscriptions.current[shipId]) {
+                console.log(`ShipContext: Notifying ${cameraSubscriptions.current[shipId].size} subscribers for ship ${shipId}`);
+            } else {
+                console.warn(`ShipContext: No subscribers for ship ${shipId}`);
+            }
+
+            // Notify subscribers
+            if (cameraSubscriptions.current[shipId]) {
+                cameraSubscriptions.current[shipId].forEach(callback => callback(frameData));
+            }
+        }, []);
+
+        // Expose these methods
+        const getCameraFrame = useCallback((shipId: number) => {
+            return cameraFeeds[shipId] || null;
+        }, [cameraFeeds]);
+
+        const subscribeToCameraFrames = useCallback((shipId: number, callback: (frame: string) => void) => {
+            if (!cameraSubscriptions.current[shipId]) {
+                cameraSubscriptions.current[shipId] = new Set();
+            }
+
+            cameraSubscriptions.current[shipId].add(callback);
 
             return () => {
-                simulator.stop();
+                if (cameraSubscriptions.current[shipId]) {
+                    cameraSubscriptions.current[shipId].delete(callback);
+                }
             };
-        }
-    }, [useMockShips]);
+        }, []);
 
-    const constants: MapConstants = {
-        MAP_CENTER,
-        MAP_SIZE_KM,
-        KM_PER_DEGREE_LAT,
-        KM_PER_DEGREE_LON,
-        LAT_OFFSET,
-        LON_OFFSET
+
+        // Handle simulator creation and cleanup
+        useEffect(() => {
+            // Clear any existing simulators first
+            simulators.forEach(sim => sim.stop());
+
+            let newSimulators: any[] = [];
+
+            if (useMockShips) {
+                const mockSim = new MockShipSimulator({
+                    ships,
+                    setShips,
+                    config: {
+                        shipCount: 5,
+                        updateInterval: 1000,
+                        mapCenter: MapConstants.MAP_CENTER as [number, number],
+                        mapSizeKm: MapConstants.MAP_SIZE_KM,
+                        speedRange: [5, 20]
+                    }
+                });
+                newSimulators.push(mockSim);
+            } else if (connectUnity && ipAddresses && ipAddresses.length > 0) {
+                // Create one UnityShipSimulator per IP
+                newSimulators = ipAddresses
+                    .filter(ip => ip) // Filter out empty entries
+                    .map(ip => {
+                        try {
+                            return new UnityShipSimulator({ ships, setShips }, ip, connectUnity, handleCameraMessage);
+                        } catch (error) {
+                            console.error(`Failed to create simulator for ${ip}:`, error);
+                            return null;
+                        }
+                    })
+                    .filter(Boolean); // Remove any null entries
+            } else {
+                console.log("No go! No simulator found.");
+            }
+
+            // Start all simulators
+            newSimulators.forEach(sim => sim?.start());
+            setSimulators(newSimulators);
+
+            // Cleanup function. Runs when dependencies change. Stops simulators from running if toggled off.
+            return () => {
+                newSimulators.forEach(sim => sim?.stop && sim.stop());
+            };
+        }, [useMockShips, connectUnity, ipAddresses ? ipAddresses.join(',') : '', handleCameraMessage]);
+
+
+        const constants: MapConstantsType = MapConstants;
+
+        return (
+            <ShipContext.Provider value={{
+                ships,
+                selectedShipId,
+                selectShip,
+                addShip,
+                updateShip,
+                removeShip,
+                constants,
+                getCameraFrame,
+                subscribeToCameraFrames
+            }}>
+                {children}
+            </ShipContext.Provider>
+        );
     };
-
-    return (
-        <ShipContext.Provider value={{
-            ships,
-            selectedShipId,
-            selectShip,
-            addShip,
-            updateShip,
-            removeShip,
-            constants
-        }}>
-            {children}
-        </ShipContext.Provider>
-    );
-};
 
 export const useShips = (): ShipContextType => {
     const context = useContext(ShipContext);
