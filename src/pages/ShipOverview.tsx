@@ -1,22 +1,25 @@
-import React from 'react';
-import Conning from '../views/Conning';
-import Radar from '../views/Radar';
-import MiniMap from '../views/MiniMap';
-import Render3D from '../views/Render3D';
-import CameraView from '../components/CameraView';
-
-import { useShips } from '../components/ShipContext';
-
-interface ShipOverviewProps {
-    isControlMode: boolean;
-    setIsControlMode: React.Dispatch<React.SetStateAction<boolean>>;
-}
+// src/pages/ShipOverview.tsx - View Collection, alternative page
 
 // TODO: Control Mode read input
 // TODO: Control Mode ESC for exit shortcut
 // TODO: Currently viewing ship label, and drop down list/menu
 // TODO: Use last selected ship if no active selection
 // TODO: Config columns-container to not be 50% of height, but to stretch. Camera container should be fixed height though
+
+
+import { useShips } from '../hooks/ShipContext';
+import CameraView from '../views/CameraView';
+import Render3D from '../views/Render3D';
+import MiniMap from '../views/MiniMap';
+import Conning from '../views/Conning';
+import Radar from '../views/Radar';
+import React from 'react';
+
+
+interface ShipOverviewProps {
+    isControlMode: boolean;
+    setIsControlMode: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 const ShipOverview: React.FC<ShipOverviewProps> = ({ isControlMode, setIsControlMode }) => {
     const { selectedShipId, ships } = useShips();
