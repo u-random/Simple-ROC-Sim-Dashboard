@@ -1,4 +1,4 @@
-import { useShips } from './ShipContext.tsx';
+import { useShips } from '../hooks/ShipContext';
 
 const ConningInfo = () => {
     const { ships, selectedShipId } = useShips();

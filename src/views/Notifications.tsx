@@ -6,8 +6,8 @@
 // TODO: Crop camera view
 
 
-import { useShips } from '../components/ShipContext';
-import CameraView from '../components/CameraView';
+import { useShips } from '../hooks/ShipContext';
+import CameraView from '../views/CameraView';
 import { useState, useEffect } from 'react';
 //import { ShipStatus } from '../types/Types';
 
