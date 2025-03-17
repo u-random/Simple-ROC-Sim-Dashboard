@@ -1,4 +1,11 @@
+// src/hooks/MapContext.tsx - Context provider for map related stuff, like ship markers
+
+
+// TODO: Consider using Types interface
+
+
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+
 
 // Define map instance type (adjust based on actual map library you're using)
 type MapInstance = any;

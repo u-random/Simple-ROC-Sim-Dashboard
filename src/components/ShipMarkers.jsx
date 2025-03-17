@@ -1,8 +1,10 @@
-// This file creates SVG icons and labels to act as ship marker
+// src/components/ShipMarkers.jsx - This file creates SVG icons and labels to act as ship marker
 // It uses the data from ShipContext
 
-// TODO: OK - Fix bug with ship markers disappearing when stacked close together
+
+// TODO: Different pointer when hovering over ship
 // TODO: Zoom to selected ship?
+
 
 import { useEffect, useRef, useCallback } from 'react';
 import { useShips } from './ShipContext';
