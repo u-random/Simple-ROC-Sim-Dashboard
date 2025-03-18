@@ -1,7 +1,7 @@
-import RenderTexture from "../assets/FerryRender.png";
+// import RenderTexture from "../assets/FerryRender.png";
+import React, {MutableRefObject, useRef} from 'react';
 import Movie from "../assets/FerryRender.webm";
 
-import React, {MutableRefObject, useRef} from 'react';
 
 const Render3D: React.FC = () => {
     const videoRef: MutableRefObject<HTMLVideoElement | null> = useRef<HTMLVideoElement | null>(null);

@@ -6,11 +6,11 @@
 
 
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback, Context } from 'react';
+import { ShipData, ShipContextType, ShipProviderProps } from '../types/Types';
 import { MapConstantsType, MapConstants } from '../types/MapConstants';
 import UnityShipSimulator from "../utils/UnityShipSimulator.ts";
 import MockShipSimulator from '../utils/MockShipSimulator';
 import { staticShips } from '../utils/StaticShips';
-import { ShipData, ShipContextType, ShipProviderProps } from '../types/Types';
 
 
 const ShipContext: Context<ShipContextType | null> = createContext<ShipContextType | null>(null);
@@ -146,7 +146,6 @@ export const ShipProvider: React.FC<ShipProviderProps> =
                 newSimulators.forEach(sim => sim?.stop && sim.stop());
             };
         }, [useMockShips, connectUnity, ipAddresses ? ipAddresses.join(',') : '', handleCameraMessage]);
-
 
         const constants: MapConstantsType = MapConstants;
 
