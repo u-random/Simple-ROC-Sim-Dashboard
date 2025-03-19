@@ -213,7 +213,7 @@ body {
   color: var(--text-primary);
   background-color: var(--button-bg);
   padding: 8px 16px;
-  min-width: 80px;
+  min-width: 120px;
   height: 40px;
   display: flex;
   align-items: center;
@@ -229,6 +229,36 @@ body {
   color: white;
   border-color: #0056b3;
 }
+
+
+.header .settings-button {
+  position: absolute;
+  height: 40px;
+  width: 40px !important;
+  min-width: unset !important; /* Override the min-width from .header button */
+  right: 10px;
+  margin-left: auto;
+  background: none !important;
+  border: none !important;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 !important;
+  border-radius: 100%;
+}
+
+/* Override hover state as well */
+.header .settings-button:hover {
+  background: lightgrey !important;
+  border-color: transparent !important;
+}
+
+/* Override focus state */
+.header .settings-button:focus,
+.header .settings-button:focus-visible {
+}
+
+
+
 /* END HEADER STYLES*/
 
 
@@ -921,19 +951,6 @@ button:focus-visible {
 
 /* BEGIN POPUP STYLES */
 /* TODO: Improve the CSS for this */
-
-/* Settings Button */
-.settings-button {
-  position: absolute;
-  right: 0px;
-  margin-left: auto;
-  background: none !important;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 0;
-
-}
 
 
 /* Settings Popup */
