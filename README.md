@@ -2,6 +2,8 @@
 
 This is the working directory for the graphical user interface. 
 
+It is a single-page web application written in Javascript/Typescript/React.
+
 
 https://github.com/user-attachments/assets/48b62cfb-24ce-4283-900d-e85967c6ac0f
 
@@ -17,3 +19,12 @@ Link to a longer video demo on vimeo: https://vimeo.com/1063860149
 
 
 More info to come.
+
+
+### Third Party Credits
+
+SVG Cog Icon (https://www.svgrepo.com/svg/327719/cog)
+
+Ionicons
+
+MIT License
