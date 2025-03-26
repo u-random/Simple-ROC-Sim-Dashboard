@@ -4,6 +4,7 @@
 
 // TODO: Crop view of image/stream in standard mode
 // DO Max width/height toggling.
+// TODO: Do also fit to width/height in Ship Overview
 // TODO: FIX issue where all ships view the camera feed, so not tied to ship id
 
 

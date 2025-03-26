@@ -1,4 +1,14 @@
+// src/views/Render3D.tsx - Provides the rendered view of the current ship model
+// Currently using rendered PNG image or WEBm video files for 3D effect
+// Potential future expansion: ThreeJS or similar real-time rendering
+
+
+// TODO: Select model based on current shipContext type
+// TODO: Add a test if: current model has video, use video, else use image
+
+
 // import RenderTexture from "../assets/FerryRender.png";
+//import RenderTexture from "../assets/GasCarrierShip.png";
 import React, {MutableRefObject, useRef} from 'react';
 import Movie from "../assets/FerryRender.webm";
 
@@ -27,6 +37,7 @@ const Render3D: React.FC = () => {
                     alt={`Ferry Render`}
                     className="render-texture"
                 />*/}
+                {/* Video element*/}
                 <video
                     ref={videoRef}
                     src={Movie}
