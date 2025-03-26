@@ -15,30 +15,48 @@ import FleetOverview    from './pages/FleetOverview';
 import ShipOverview     from './pages/ShipOverview';
 import SvgCog           from './components/SvgCog';
 import { MapProvider }  from './hooks/MapContext';
-import { useState }     from 'react';
+import { useState, useRef, useEffect }     from 'react';
 import './styles/App.css'
 
 
 function App() {
     const [currentView, setCurrentView] = useState('fleet'); // 'fleet' or 'ship'
     const [isControlMode, setIsControlMode] = useState(false);
+    const [isPageTransitioning, setIsPageTransitioning] = useState(false);
+    const pageRef = useRef<HTMLDivElement>(null);
 
     // "Lifting state up" pattern for IP array (Settings popup)
     const [showSettings, setShowSettings] = useState(false);
     const [connectUnity, setConnectUnity] = useState(false);
-    const [ipAddresses, setIpAddresses] = useState([
-        '192.168.10.127'
-    ]);
-    const [selectedIp, setSelectedIp] = useState('192.168.10.100'); // TODO: remove
-
+    const [ipAddresses, setIpAddresses] = useState(['192.168.10.171']); // Can add default ip addresses to this list
+    
+    // Handle page transition effect
+    useEffect(() => {
+        // Add active class after initial render to trigger animation
+        if (pageRef.current) {
+            setIsPageTransitioning(true);
+            
+            // Use requestAnimationFrame to ensure transition is visible
+            requestAnimationFrame(() => {
+                if (pageRef.current) {
+                    pageRef.current.classList.add('page-transition-enter-active');
+                }
+            });
+            
+            // Reset transition state after animation completes
+            const timer = setTimeout(() => {
+                setIsPageTransitioning(false);
+            }, 500); // Match the CSS transition duration
+            
+            return () => clearTimeout(timer);
+        }
+    }, [currentView]);
 
     const settingsPopupProps: SettingsPopupProps = {
         show: showSettings,
         onClose: () => setShowSettings(false),
         ipAddresses,
         setIpAddresses,
-        selectedIp,
-        setSelectedIp,
         connectUnity,
         setConnectUnity
     };
@@ -51,36 +69,51 @@ function App() {
                     <header className="header">
                         <div className="title">Remote Operation Center</div>
                         <button
-                            onClick={() => setCurrentView('fleet')}
+                            onClick={() => {
+                                if (currentView !== 'fleet') {
+                                    setCurrentView('fleet');
+                                }
+                            }}
                             className={currentView === 'fleet' ? 'active' : ''}
                         >
                             Fleet View
                         </button>
                         <button
-                            onClick={() => {setCurrentView('ship'); setIsControlMode(false);}}
+                            onClick={() => {
+                                if (currentView !== 'ship') {
+                                    setCurrentView('ship');
+                                    setIsControlMode(false);
+                                }
+                            }}
                             className={currentView === 'ship' ? 'active' : ''}
                         >
                             Ship View
                         </button>
                         {isControlMode && currentView === 'ship' && <div className="control-mode-indicator">CONTROL MODE</div>}
-                        {currentView === 'fleet' &&
+
                             <button
                                 className="settings-button"
                                 onClick={() => setShowSettings(true)}
                             >
                             <SvgCog />
                             </button>
-                        }
+
                     </header>
 
-                    {currentView === 'fleet' ? (
-                        <FleetOverview/>
-                    ) : (
-                        <ShipOverview
-                            isControlMode={isControlMode}
-                            setIsControlMode={setIsControlMode}
-                        />
-                    )}
+                    <div 
+                        key={currentView} 
+                        className="page-transition-enter"
+                        ref={pageRef}
+                    >
+                        {currentView === 'fleet' ? (
+                            <FleetOverview/>
+                        ) : (
+                            <ShipOverview
+                                isControlMode={isControlMode}
+                                setIsControlMode={setIsControlMode}
+                            />
+                        )}
+                    </div>
 
                     <SettingsPopup {...settingsPopupProps}/>
                 </div>
