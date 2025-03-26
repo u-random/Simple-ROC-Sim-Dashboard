@@ -8,13 +8,14 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback, Context } from 'react';
 import { ShipData, ShipContextType, ShipProviderProps } from '../types/Types';
 import { MapConstantsType, MapConstants } from '../types/MapConstants';
-import UnityShipSimulator from "../utils/UnityShipSimulator.ts";
 import MockShipSimulator from '../utils/MockShipSimulator';
+
+import { TelemetryClient } from '../utils/TelemetryClient';
+import { VideoClient } from '../utils/VideoClient';
 import { staticShips } from '../utils/StaticShips';
 
 
 const ShipContext: Context<ShipContextType | null> = createContext<ShipContextType | null>(null);
-
 
 export const ShipProvider: React.FC<ShipProviderProps> =
     //({children, useMockShips = process.env.NODE_ENV === 'development', ipAddresses = []}) => {
@@ -23,7 +24,11 @@ export const ShipProvider: React.FC<ShipProviderProps> =
         const [ships, setShips] = useState<ShipData[]>(staticShips);
         const [selectedShipId, setSelectedShipId] = useState<number | null>(null);
         //const [mockSimulator, setMockSimulator] = useState<MockShipSimulator | null>(null);
-        const [simulators, setSimulators] = useState<(MockShipSimulator | UnityShipSimulator)[]>([]);
+        const [simulators, setSimulators] = useState<(MockShipSimulator)[]>([]);
+        // Setup for multiple Unity servers = multiple clients
+        const [telemetryClients, setTelemetryClients] = useState<TelemetryClient[]>([]);
+        const [videoClients, setVideoClients]         = useState<VideoClient[]>([]);
+
 
         const [cameraFeeds, setCameraFeeds] = useState<{[key: string]: string}>({});
         const cameraSubscriptions = useRef<{[key: string]: Set<(frame: string) => void>}>({});
@@ -61,6 +66,7 @@ export const ShipProvider: React.FC<ShipProviderProps> =
         }, []);
 
 
+        // Callback function used in VideoClient.ts: Sends data through pub/sub pattern to useCameraFeed hook
         const handleCameraMessage = useCallback((shipId: number, frameData: string) => {
             console.log(`ShipContext: Received camera frame for ship ${shipId}, length: ${frameData.length}`);
             setCameraFeeds(prev => {
@@ -86,18 +92,32 @@ export const ShipProvider: React.FC<ShipProviderProps> =
         }, [cameraFeeds]);
 
         const subscribeToCameraFrames = useCallback((shipId: number, callback: (frame: string) => void) => {
+            console.log(`Adding subscriber for ship ${shipId}`);
+
+            if (!shipId) {
+                console.warn("Cannot subscribe with null shipId");
+                return () => {};
+            }
+
             if (!cameraSubscriptions.current[shipId]) {
                 cameraSubscriptions.current[shipId] = new Set();
             }
 
             cameraSubscriptions.current[shipId].add(callback);
 
+            // Send current frame immediately if available
+            const currentFrame = cameraFeeds[shipId];
+            if (currentFrame) {
+                callback(currentFrame);
+            }
+
             return () => {
+                console.log(`Removing subscriber for ship ${shipId}`);
                 if (cameraSubscriptions.current[shipId]) {
                     cameraSubscriptions.current[shipId].delete(callback);
                 }
             };
-        }, []);
+        }, [cameraFeeds]);
 
 
         // Handle simulator creation and cleanup
@@ -105,7 +125,13 @@ export const ShipProvider: React.FC<ShipProviderProps> =
             // Clear any existing simulators first
             simulators.forEach(sim => sim.stop());
 
-            let newSimulators: any[] = [];
+            // Clear any existing clients
+            telemetryClients.forEach(client => client.stop());
+            videoClients.forEach(client => client.stop());
+
+            let newTelemetryClients: TelemetryClient[] = [];
+            let newVideoClients: VideoClient[] = [];
+            let newMockSimulators: MockShipSimulator[] = [];
 
             if (useMockShips) {
                 const mockSim = new MockShipSimulator({
@@ -119,31 +145,49 @@ export const ShipProvider: React.FC<ShipProviderProps> =
                         speedRange: [5, 20]
                     }
                 });
-                newSimulators.push(mockSim);
+                newMockSimulators.push(mockSim);
             } else if (connectUnity && ipAddresses && ipAddresses.length > 0) {
-                // Create one UnityShipSimulator per IP
-                newSimulators = ipAddresses
+                // Create clients for each IP
+                ipAddresses
                     .filter(ip => ip) // Filter out empty entries
-                    .map(ip => {
+                    .forEach(ip => {
                         try {
-                            return new UnityShipSimulator({ ships, setShips }, ip, connectUnity, handleCameraMessage);
+                            // Create telemetry client (port 3000)
+                            const telemetryClient = new TelemetryClient(
+                                { ships, setShips },
+                                ip
+                            );
+                            newTelemetryClients.push(telemetryClient);
+
+                            // Create video client (port 3001)
+                            const videoClient = new VideoClient(
+                                ip,
+                                3001,
+                                handleCameraMessage // passing callback
+                            );
+                            newVideoClients.push(videoClient);
                         } catch (error) {
-                            console.error(`Failed to create simulator for ${ip}:`, error);
-                            return null;
+                            console.error(`Failed to create clients for ${ip}:`, error);
                         }
-                    })
-                    .filter(Boolean); // Remove any null entries
+                    });
             } else {
-                console.log("No go! No simulator found.");
+                console.log("No clients or simulators created");
             }
 
-            // Start all simulators
-            newSimulators.forEach(sim => sim?.start());
-            setSimulators(newSimulators);
+            // Start all clients and simulators
+            newMockSimulators.forEach(sim => sim.start());
+            newTelemetryClients.forEach(client => client.start());
+            newVideoClients.forEach(client => client.start());
 
-            // Cleanup function. Runs when dependencies change. Stops simulators from running if toggled off.
+            setSimulators(newMockSimulators);
+            setTelemetryClients(newTelemetryClients);
+            setVideoClients(newVideoClients);
+
+            // Cleanup function
             return () => {
-                newSimulators.forEach(sim => sim?.stop && sim.stop());
+                newMockSimulators.forEach(sim => sim.stop());
+                newTelemetryClients.forEach(client => client.stop());
+                newVideoClients.forEach(client => client.stop());
             };
         }, [useMockShips, connectUnity, ipAddresses ? ipAddresses.join(',') : '', handleCameraMessage]);
 
