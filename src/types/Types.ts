@@ -89,8 +89,8 @@ export interface SettingsPopupProps {
     // States from App.tsx
     ipAddresses: string[];
     setIpAddresses: (ips: string[]) => void;
-    selectedIp: string;
-    setSelectedIp: (ip: string) => void;
+    selectedIp?: string;
+    setSelectedIp?: (ip: string) => void;
     connectUnity: boolean;
     setConnectUnity: (connect: boolean) => void;
 }
