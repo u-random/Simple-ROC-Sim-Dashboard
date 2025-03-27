@@ -19,7 +19,8 @@ Link to a longer video demo on vimeo: https://vimeo.com/1063860149
 <img width="1569" alt="FleetOverview-ShipSelected" src="https://github.com/user-attachments/assets/2d8ab362-f126-47fb-94c3-fcf7bfb33bdc" />
 
 ### Ship Overview: Light mode
-<img width="1569" alt="ShipOverview" src="https://github.com/user-attachments/assets/9d06277a-59da-432e-bf3a-e131829243e0" />
+<img width="1517" alt="ShipOverview" src="https://github.com/user-attachments/assets/7e2d3ea4-b18d-45c4-b2ef-cb4574902d91" />
+
 
 
 ### Fleet Overview: Dark mode
@@ -29,6 +30,7 @@ Link to a longer video demo on vimeo: https://vimeo.com/1063860149
 <img width="1569" alt="FleetOverview-ShipSelected-Darkmode" src="https://github.com/user-attachments/assets/cee25d16-221f-4ca4-b885-00b49bcfba56" />
 
 ### Ship Overview: Dark mode
-<img width="1569" alt="ShipOverview-Darkmode" src="https://github.com/user-attachments/assets/bf667622-1d10-45a7-aeb8-9030ece8a911" />
+<img width="1517" alt="ShipOverview-Darkmode" src="https://github.com/user-attachments/assets/0d2fe875-c0be-4760-8ebd-41a9b2f5be7b" />
+
 
 More info to come.
