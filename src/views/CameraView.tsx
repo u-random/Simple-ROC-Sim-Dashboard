@@ -6,11 +6,13 @@
 // DO Max width/height toggling.
 // TODO: Do also fit to width/height in Ship Overview
 // TODO: FIX issue where all ships view the camera feed, so not tied to ship id
-
+// TODO: Hide fit button when width is
 
 import debugTexture from '../assets/Debugempty219.png';
 import { useCameraFeed } from '../hooks/useCameraFeed';
 import { useEffect, useState } from 'react';
+
+
 
 
 interface CameraViewProps {
@@ -18,6 +20,7 @@ interface CameraViewProps {
     aspectRatio?: "ultrawide" | "standard";
     isControlMode?: boolean;
     isShipView?: boolean;
+    fitMode?: "height" | "width";
 }
 
 const isValidBase64 = (str: string): boolean => {
@@ -34,9 +37,10 @@ const CameraView = ({
                         shipId,
                         aspectRatio = "standard",
                         isControlMode = false,
-                        isShipView = false
+                        isShipView = false,
+                        fitMode = "height"
                     }: CameraViewProps) => {
-    const { frame, isConnected } = useCameraFeed(shipId);
+    const { frame, isConnected, frameObjectUrl } = useCameraFeed(shipId);
     const [error, setError] = useState<string | null>(null);
 
     const controlClass = isControlMode ? "control-mode" : "";
@@ -44,9 +48,11 @@ const CameraView = ({
 
     // DEBUG
     useEffect(() => {
-        console.log(`CameraView for ship ${shipId}: connected=${isConnected}, frame=${frame ? 'available' : 'not available'}`);
-        if (frame) {
+        console.log(`CameraView for ship ${shipId}: connected=${isConnected}, frame=${frame ? 'available' : 'not available'}, type=${frame ? (typeof frame === 'string' ? 'string' : 'Blob') : 'null'}`);
+        if (frame && typeof frame === 'string') {
             console.log(`Frame length: ${frame.length}, first 20 chars: ${frame.substring(0, 20)}`);
+        } else if (frame instanceof Blob) {
+            console.log(`Binary frame size: ${frame.size} bytes`);
         }
     }, [shipId, isConnected, frame]);
 
@@ -64,30 +70,59 @@ const CameraView = ({
                         background: 'rgba(0,0,0,0.5)',
                         padding: '4px'
                     }}>
-                        Frame: {frame ? `${frame.length} bytes` : 'none'}
+                        Frame: {frame ? 
+                            (typeof frame === 'string' ? `${frame.length} bytes (base64)` : `${(frame as Blob).size} bytes (binary)`) 
+                            : 'none'}
                     </div>
-                    {frame && isValidBase64(frame) ? (
+                    <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        color: 'white',
+                        background: 'rgba(0,0,0,0.5)',
+                        padding: '4px'
+                    }}>
+                        {!isConnected ? 'Connecting to camera feed...' :
+                            error ? `Connection error: ${error}` :
+                                'Camera connected'}
+                    </div>
+                    
+                    {/* Display based on frame type */}
+                    {frameObjectUrl ? (
+                        // Binary frame with object URL
+                        <img
+                            src={frameObjectUrl}
+                            alt={`Camera Feed ${shipId}`}
+                            className="camera-texture"
+                            style={fitMode !== 'height' ?
+                                {width: '100%'} :
+                                {height: '100%'}
+                            }
+                            onError={(e) => console.error("Binary image failed to load", e)}
+                        />
+                    ) : frame && typeof frame === 'string' && isValidBase64(frame) ? (
+                        // Legacy base64 frame
                         <img
                             src={`data:image/jpeg;base64,${frame}`}
                             alt={`Camera Feed ${shipId}`}
-                            className="camera-video"
-                            style={{maxWidth: '100%', maxHeight: '100%'}}
-                            onError={(e) => console.error("Image failed to load", e)}
+                            className="camera-texture"
+                            style={fitMode !== 'height' ?
+                                {width: '100%'} :
+                                {height: '100%'}
+                            }
+                            onError={(e) => console.error("Base64 image failed to load", e)}
                         />
-
                     ) : (
-                        <>
-                            <img
-                                src={debugTexture}
-                                alt={`Camera Feed ${shipId}`}
-                                className="camera-texture"
-                            />
-                            <div className="camera-status-overlay">
-                                {!isConnected ? 'Connecting to camera feed...' :
-                                    error ? `Connection error: ${error}` :
-                                        'No camera connection'}
-                            </div>
-                        </>
+                        // Fallback to debug texture
+                        <img
+                            src={debugTexture}
+                            alt={`Camera Feed ${shipId}`}
+                            className="camera-texture"
+                            style={fitMode !== 'height' ?
+                                {width: '100%'} :
+                                {height: '100%'}
+                            }
+                        />
                     )}
                 </div>
             </div>
