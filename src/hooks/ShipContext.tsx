@@ -19,7 +19,7 @@ const ShipContext: Context<ShipContextType | null> = createContext<ShipContextTy
 
 export const ShipProvider: React.FC<ShipProviderProps> =
     //({children, useMockShips = process.env.NODE_ENV === 'development', ipAddresses = []}) => {
-    ({children, useMockShips = true, connectUnity = false, ipAddresses = []}) => {
+    ({children, useMockShips = false, connectUnity = false, ipAddresses = []}) => {
         // Initialize with static ships only
         const [ships, setShips] = useState<ShipData[]>(staticShips);
         const [selectedShipId, setSelectedShipId] = useState<number | null>(null);
@@ -30,8 +30,8 @@ export const ShipProvider: React.FC<ShipProviderProps> =
         const [videoClients, setVideoClients]         = useState<VideoClient[]>([]);
 
 
-        const [cameraFeeds, setCameraFeeds] = useState<{[key: string]: string}>({});
-        const cameraSubscriptions = useRef<{[key: string]: Set<(frame: string) => void>}>({});
+        const [cameraFeeds, setCameraFeeds] = useState<{[key: string]: string | Blob}>({});
+        const cameraSubscriptions = useRef<{[key: string]: Set<(frame: string | Blob) => void>}>({});
 
         //console.log("useUnityShips", useUnityShips);
 
@@ -67,13 +67,21 @@ export const ShipProvider: React.FC<ShipProviderProps> =
 
 
         // Callback function used in VideoClient.ts: Sends data through pub/sub pattern to useCameraFeed hook
-        const handleCameraMessage = useCallback((shipId: number, frameData: string) => {
-            console.log(`ShipContext: Received camera frame for ship ${shipId}, length: ${frameData.length}`);
+        const handleCameraMessage = useCallback((shipId: number, frameData: string | Blob) => {
+            // Log frame details with appropriate type checking
+            if (frameData instanceof Blob) {
+                console.log(`ShipContext: Received binary camera frame for ship ${shipId}, size: ${frameData.size} bytes`);
+            } else {
+                console.log(`ShipContext: Received base64 camera frame for ship ${shipId}, length: ${frameData.length}`);
+            }
+            
+            // Update state with new frame
             setCameraFeeds(prev => {
                 console.log(`ShipContext: Updating camera feeds for ship ${shipId}`);
                 return {...prev, [shipId]: frameData};
             });
 
+            // Log subscription info
             if (cameraSubscriptions.current[shipId]) {
                 console.log(`ShipContext: Notifying ${cameraSubscriptions.current[shipId].size} subscribers for ship ${shipId}`);
             } else {
@@ -91,7 +99,7 @@ export const ShipProvider: React.FC<ShipProviderProps> =
             return cameraFeeds[shipId] || null;
         }, [cameraFeeds]);
 
-        const subscribeToCameraFrames = useCallback((shipId: number, callback: (frame: string) => void) => {
+        const subscribeToCameraFrames = useCallback((shipId: number, callback: (frame: string | Blob) => void) => {
             console.log(`Adding subscriber for ship ${shipId}`);
 
             if (!shipId) {
@@ -111,10 +119,16 @@ export const ShipProvider: React.FC<ShipProviderProps> =
                 callback(currentFrame);
             }
 
+            // Return unsubscribe function that properly cleans up
             return () => {
                 console.log(`Removing subscriber for ship ${shipId}`);
                 if (cameraSubscriptions.current[shipId]) {
                     cameraSubscriptions.current[shipId].delete(callback);
+                    
+                    // If this was the last subscriber, log that
+                    if (cameraSubscriptions.current[shipId].size === 0) {
+                        console.log(`Last subscriber removed for ship ${shipId}`);
+                    }
                 }
             };
         }, [cameraFeeds]);
