@@ -9,8 +9,8 @@ export const staticShips: ShipData[] = [
     {
         id: 101,
         name: "Harbor Camera",
-        position: { longitude: MAP_CENTER[0], latitude: MAP_CENTER[1] },
-        motion: { heading: 0, speed: 0, course: 0 },
+        position: { longitude: MAP_CENTER[0] +0.01, latitude: MAP_CENTER[1]+0.01 },
+        motion: { heading: 315, speed: 0, course: 0 },
         status: ShipStatus.DOCKED,
         connection: { connected: true, lastUpdated: Date.now() },
         telemetry: {},
@@ -19,7 +19,7 @@ export const staticShips: ShipData[] = [
     {
         id: 102,
         name: "Bridge Camera",
-        position: { longitude: MAP_CENTER[0] + 0.01, latitude: MAP_CENTER[1] - 0.005 },
+        position: { longitude: MAP_CENTER[0] + 0.085, latitude: MAP_CENTER[1] - 0.015 },
         motion: { heading: 270, speed: 0, course: 0 },
         status: ShipStatus.DOCKED,
         connection: { connected: true, lastUpdated: Date.now() },
