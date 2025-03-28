@@ -179,7 +179,6 @@ body {
   flex-direction: column; /* V-stack header and list*/
   height: 100vh;           /* BUG:Make sure this is right for scrolling*/
   max-height: 100%;
-  background-color: #bbe8e5;
   overflow: hidden;  /* DEBUG */
 }
 
@@ -192,6 +191,7 @@ body {
   max-height: 100%;
   background: var(--bg-secondary);
   overflow: hidden;  /* DEBUG */
+  border: 1px solid #D1D1D1; /* Consider adding only to ShipOverview variant*/
 }
 /* END CONTAINER SETUP */
 
@@ -243,7 +243,7 @@ body {
 }
 
 .header button.active {
-  background: #007bff;
+  background: var(--color-primary);
   color: white;
   border-color: #0056b3;
 }
@@ -287,8 +287,6 @@ body {
 .header .icon-cog:hover {
   fill: #213547FF; /* = text-primary black version */
 }
-
-
 
 /* END HEADER STYLES*/
 
@@ -537,6 +535,13 @@ button:focus-visible {
   justify-content: center;
 }
 
+
+.container-25 .maplibregl-canvas-container,
+.container-25 .map-container.grabbing,
+.container-25 .maplibregl-canvas {
+cursor: default; /* Remove special cursors from map in mini-map mode */
+}
+
 .map-container {
   position: absolute;
   top: 0;
@@ -558,8 +563,8 @@ button:focus-visible {
   user-select: none;
   aspect-ratio: 1/1;
   position: relative;
-  border-radius: 4px;
   overflow: hidden;
+  cursor: default !important;
   opacity: 0; /* Start invisible */
   animation: fadeIn 0.8s ease-in-out forwards; /* Slightly longer fade in */
 }
@@ -742,15 +747,13 @@ button:focus-visible {
   width: 100%;
   background: #000;
   overflow: hidden;
-  border: 1px solid #D1D1D1;
+  /*border: 1px solid #D1D1D1;*/
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Camera content */
 .camera-content {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
   height: 100%;
   display: flex;
@@ -758,25 +761,21 @@ button:focus-visible {
   justify-content: center;
   overflow: hidden; /* Prevent any overflow from the image */
 }
-/* MERGE ABOVE and BELOW */
-/* Placeholder styling */
-
-
-.aspect-ratio-ultrawide .camera-frame {
-  aspect-ratio: 64 / 27; /* Updated to 64:27 (≈2.37:1) from 21:9 */
-  max-height: 50vh;
-}
 
 /* Image styling for the texture */
 .camera-texture {
-  width: 100%;
-  max-width: 100%;
-  object-fit: cover; /* Cover ensures the frame is fully filled */
-  position: relative;
-  top: 0;
-  left: 0;
-  z-index: 10;
+  object-fit: contain; /* Maintains aspect ratio, fits within the frame */
+  display: block; /* Removes any extra spacing */
 }
+
+
+.aspect-ratio-ultrawide .camera-frame {
+  aspect-ratio: 2560 / 1080; /* Updated to 64:27 (≈2.37:1) from 21:9 */
+  max-height: 50vh;
+}
+
+
+
 
 /* Aspect ratio handling with modern property */
 .aspect-ratio-standard .camera-frame {
@@ -807,14 +806,7 @@ button:focus-visible {
 
 /* Existing styles remain the same, add this below camera-content styles */
 
-.camera-content img.camera-texture {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* Maintains aspect ratio, fits within the frame */
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
+
 
 /* Ensure the placeholder stays on top of the image if needed */
 .camera-placeholder-text {
@@ -935,8 +927,6 @@ button:focus-visible {
   min-height: 0; /* Important for proper scrolling */
   overflow: hidden;
   z-index: 0;
-  border: 1px solid #D1D1D1;
-
 }
 
 
@@ -1168,3 +1158,37 @@ input:checked + .toggle-slider:before {
   pointer-events: none;
 }
 /* END TOGGLE STYLES */
+
+
+/* BEGIN SVG BUTTON STYLES */
+.svg-button {
+  position: absolute;
+  height: 60px;
+  width: 60px !important;
+  min-width: unset !important; /* Override the min-width from .header button */
+  right: 20px;
+  top: 20px;
+  margin-left: auto;
+  background: none !important;
+  cursor: pointer;
+  border-radius: 25%;
+  border: 6px solid white;
+  padding: 3px;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.75;
+  fill: none;
+}
+
+.svg-button:hover {
+opacity: 1;
+}
+
+
+.icon-arrows {
+  width: 48px;
+  height: 48px;
+}
+/* END SVG BUTTON STYLES */
