@@ -1,5 +1,4 @@
-import Map from "./Map.jsx";
-
+import RotatingMap from "./RotatingMap";
 
 const MiniMap = () => {
 
@@ -7,9 +6,7 @@ const MiniMap = () => {
     return (
         <div className="container-25">
             <div className="list-header">MINI-MAP</div>
-            <div className="minimap-container">
-                <Map minimap={true}/>
-            </div>
+            <RotatingMap />
         </div>
     );
 };
