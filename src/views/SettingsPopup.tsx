@@ -1,6 +1,11 @@
 // src/views/SettingsPopup.tsx - Simple popup settings menu
 // For managing IP addresses of potential simulator servers, and other settings
 
+// TODO: New IP field
+// TODO: TAB context
+// TODO: Fix styles of buttons, etc
+// TODO: Consider some cookies or something for storing settings
+
 
 import { SettingsPopupProps } from '../types/Types';
 import useEscapeKey from "../hooks/useEscapeKey.tsx";
@@ -54,7 +59,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = (props: SettingsPopupProps) 
         <div className="settings-popup" onClick={handleOverlayClick}>
             <div className="settings-content">
                 <h2>ROC Settings:</h2>
-                <button className="exit-button" onClick={onClose}>Exit</button>
+                <button className="exit-button" onClick={onClose}>Close</button>
 
                 <div className="connection-toggle">
                     <h3>Connection Mode:</h3>

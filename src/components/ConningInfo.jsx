@@ -46,9 +46,21 @@ const ConningInfo = () => {
 
 
     return (
-        <div className="conning-info">
-            {renderDataSection('Navigation', navigationData)}
-
+        <div className="list">
+            <div className="list-item">
+                Position: {ship
+                ? `${ship.position.latitude.toFixed(4)}°N, ${ship.position.longitude.toFixed(4)}°E`
+                : 'N/A'}
+            </div>
+            <div className="list-item">
+                Speed: {ship ? `${ship.motion.speed.toFixed(1)} knots` : 'N/A'}
+            </div>
+            <div className="list-item">
+                Course: {ship ? `${ship.motion.course.toFixed(1)}°` : 'N/A'}
+            </div>
+            <div className="list-item">
+                Heading: {ship ? `${ship.motion.heading.toFixed(1)}°` : 'N/A'}
+            </div>
         </div>
     );
 };
