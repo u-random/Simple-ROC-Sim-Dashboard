@@ -3,7 +3,7 @@
 
 import Notifications from '../views/Notifications';
 import FleetInfo from '../views/FleetInfo';
-import Map from '../views/Map';
+import StandardMap from "../views/StandardMap.tsx";
 import React from 'react';
 
 
@@ -14,7 +14,7 @@ const FleetOverview: React.FC = () => {
             <FleetInfo />
 
             {/* Center Column - Map */}
-            <Map />
+            <StandardMap />
 
             {/* Right Column - Notification center */}
             <Notifications />
