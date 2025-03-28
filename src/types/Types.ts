@@ -45,8 +45,8 @@ export interface ShipData {
         engine2LocalRotation?: number;
         // Add other sensor data as needed
     };
-    // TODO: ADD TEST FOR THIS IN CAMERA VIEW: USE DEFAULT NO CONNECTION IF NOT SET
-    cameraFeed?     : string;
+    // Camera feed data can be either a base64 string or a binary Blob
+    cameraFeed?     : string | Blob;
 }
 
 // Simplified ship data for summary displays
@@ -67,8 +67,8 @@ export interface ShipContextType {
     removeShip: (id: number) => void;
     constants: MapConstantsType;
     //simulators: (MockShipSimulator | UnityShipSimulator)[];
-    getCameraFrame: (shipId: number) => string | null;
-    subscribeToCameraFrames: (shipId: number, callback: (frame: string) => void) => () => void;
+    getCameraFrame: (shipId: number) => string | Blob | null;
+    subscribeToCameraFrames: (shipId: number, callback: (frame: string | Blob) => void) => () => void;
 }
 
 export interface ShipProviderProps {
