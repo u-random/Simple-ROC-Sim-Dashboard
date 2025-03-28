@@ -14,7 +14,9 @@ import Render3D from '../views/Render3D';
 import MiniMap from '../views/MiniMap';
 import Conning from '../views/Conning';
 import Radar from '../views/Radar';
-import React from 'react';
+import React, { useState } from 'react';
+import SvgFitHeight from "../components/SvgFitHeight";
+import SvgFitWidth from "../components/SvgFitWidth";
 
 
 interface ShipOverviewProps {
@@ -26,17 +28,26 @@ const ShipOverview: React.FC<ShipOverviewProps> = ({ isControlMode, setIsControl
     const { selectedShipId, ships } = useShips();
     // Get ship from Ship view.
     const displayedShip = ships.find((ship) => ship.id === selectedShipId);
+    const [fitMode, setFitMode] = useState<"height" | "width">("width");
 
     return (
         <div className="internal-container ship-view">
             <div className="sub-title">Currently Viewing: {displayedShip?.name || 'N/A'}</div>
             {/* Full Width Camera Container */}
-            <CameraView
-                shipId={selectedShipId}
-                aspectRatio="ultrawide"
-                isControlMode={isControlMode}
-                isShipView={true}
-            />
+            <div className="camera-wrapper" style={{ position: 'relative' }}>
+                <CameraView
+                    shipId={selectedShipId}
+                    aspectRatio="ultrawide"
+                    isControlMode={isControlMode}
+                    isShipView={true}
+                    fitMode={fitMode}
+                />
+                <div
+                    onClick={() => setFitMode(prev => prev === "height" ? "width" : "height")}
+                >
+                    {fitMode === "height" ? <SvgFitWidth /> : <SvgFitHeight />}
+                </div>
+            </div>
 
             {/* Four Column Layout */}
             <div className="columns-container">
