@@ -8,14 +8,14 @@
 // TODO: Fix ship remaining in context even after connection loss: Should disappear
 
 
-import { SettingsPopupProps }   from './types/Types';
+import { useState, useRef, useEffect } from 'react';
+import { SettingsPopupProps } from './types/Types';
 import { ShipProvider } from './hooks/ShipContext.tsx';
 import SettingsPopup    from './views/SettingsPopup';
 import FleetOverview    from './pages/FleetOverview';
 import ShipOverview     from './pages/ShipOverview';
 import SvgCog           from './components/SvgCog';
 import { MapProvider }  from './hooks/MapContext';
-import { useState, useRef, useEffect }     from 'react';
 import './styles/App.css'
 
 
@@ -28,7 +28,7 @@ function App() {
     // "Lifting state up" pattern for IP array (Settings popup)
     const [showSettings, setShowSettings] = useState(false);
     const [connectUnity, setConnectUnity] = useState(false);
-    const [ipAddresses, setIpAddresses] = useState(['192.168.10.171']); // Can add default ip addresses to this list
+    const [ipAddresses, setIpAddresses] = useState(['127.0.0.1']); // Can add default ip addresses to this list
     
     // Handle page transition effect
     useEffect(() => {
