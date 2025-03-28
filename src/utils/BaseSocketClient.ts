@@ -37,12 +37,12 @@ export abstract class BaseSocketClient {
         this.serverUrl = `ws://${serverIp}:${port}`;
         this.onConnectionStateChanged = onConnectionStateChanged || null;
 
-        // Default configuration
+        // Default configuration with more resilient values
         this.config = {
-            reconnectInterval: 2000,
-            maxReconnectAttempts: 5,
-            maxReconnectDelay: 30000,
-            heartbeatInterval: 10000,
+            reconnectInterval: 1000,        // Start reconnecting more quickly
+            maxReconnectAttempts: 10,       // More attempts before giving up
+            maxReconnectDelay: 10000,       // Cap at 10 seconds between attempts
+            heartbeatInterval: 5000,        // More frequent heartbeat to detect disconnections
             ...config
         };
     }
@@ -84,7 +84,9 @@ export abstract class BaseSocketClient {
         this.updateConnectionState(ConnectionState.Connecting);
 
         try {
+            // Set binary type to arraybuffer for better handling of binary messages
             const socket = new WebSocket(this.serverUrl);
+            socket.binaryType = 'arraybuffer';
 
             socket.onopen = () => {
                 console.log(`${this.constructor.name}: Connected to ${this.serverUrl}`);
@@ -95,12 +97,13 @@ export abstract class BaseSocketClient {
                 this.handleConnected();
             };
 
-            socket.onclose = () => {
-                console.log(`${this.constructor.name}: Disconnected from ${this.serverUrl}`);
+            socket.onclose = (event) => {
+                console.log(`${this.constructor.name}: Disconnected from ${this.serverUrl} with code ${event.code}, reason: ${event.reason || 'Unknown'}`);
                 this.socket = null;
                 this.handleDisconnected();
 
                 if (this.running) {
+                    console.log(`${this.constructor.name}: Will attempt reconnection`);
                     this.reconnect();
                 } else {
                     this.updateConnectionState(ConnectionState.Disconnected);
@@ -108,12 +111,22 @@ export abstract class BaseSocketClient {
             };
 
             socket.onmessage = (event) => {
-                console.log(`Raw message received: ${event.data.substring(0, 100)}...`);
-                try {
-                    const message = JSON.parse(event.data);
-                    this.processMessage(message);
-                } catch (error) {
-                    console.error(`${this.constructor.name}: Error parsing message`, error);
+                // Update last message timestamp for connection monitoring
+                this.updateLastMessageTime();
+                
+                // Check if the message is binary or text
+                if (event.data instanceof ArrayBuffer || event.data instanceof Blob) {
+                    const size = event.data instanceof ArrayBuffer ? event.data.byteLength : event.data.size;
+                    console.log(`Binary message received: ${size} bytes`);
+                    this.processBinaryMessage(event.data);
+                } else {
+                    console.log(`Text message received: ${event.data.substring(0, 100)}...`);
+                    try {
+                        const message = JSON.parse(event.data);
+                        this.processMessage(message);
+                    } catch (error) {
+                        console.error(`${this.constructor.name}: Error parsing message`, error);
+                    }
                 }
             };
 
@@ -177,17 +190,53 @@ export abstract class BaseSocketClient {
         this.updateConnectionState(ConnectionState.Disconnected);
     }
 
+    // Track the last time we received any message (text or binary)
+    private lastMessageTime: number = 0;
+    
+    // Update message timestamp whenever we receive any data
+    protected updateLastMessageTime(): void {
+        this.lastMessageTime = Date.now();
+    }
+    
     protected setupHeartbeatHandler(): void {
         if (this.heartbeatInterval) {
             clearInterval(this.heartbeatInterval);
         }
+        
+        // Initialize the last message time
+        this.lastMessageTime = Date.now();
 
         this.heartbeatInterval = setInterval(() => {
+            const now = Date.now();
+            
+            // Check if we haven't received any message for twice the heartbeat interval
+            // This helps detect "zombie" connections that appear open but aren't receiving data
+            if (this.lastMessageTime > 0 && 
+                now - this.lastMessageTime > this.config.heartbeatInterval * 2) {
+                console.warn(`${this.constructor.name}: No messages received for ${now - this.lastMessageTime}ms, reconnecting...`);
+                this.reconnect();
+                return;
+            }
+            
+            // Normal heartbeat logic
             if (this.socket?.readyState === WebSocket.OPEN) {
-                this.socket.send(JSON.stringify({
-                    type: 'heartbeat_response',
-                    timestamp: Date.now()
-                }));
+                try {
+                    this.socket.send(JSON.stringify({
+                        type: 'heartbeat_response',
+                        timestamp: now
+                    }));
+                    console.log(`${this.constructor.name}: Heartbeat sent`);
+                } catch (err) {
+                    console.error(`${this.constructor.name}: Failed to send heartbeat:`, err);
+                    // Attempt to reconnect if heartbeat fails
+                    this.reconnect();
+                }
+            } else if (this.socket?.readyState === WebSocket.CLOSING || 
+                      this.socket?.readyState === WebSocket.CLOSED || 
+                      !this.socket) {
+                console.warn(`${this.constructor.name}: Socket not open during heartbeat (state: ${this.socket?.readyState})`);
+                // Attempt to reconnect
+                this.reconnect();
             }
         }, this.config.heartbeatInterval);
     }
@@ -240,6 +289,11 @@ export abstract class BaseSocketClient {
 
     protected handleServerConnected(_shipId: number, _shipName?: string): void {
         // Base implementation does nothing
+    }
+
+    // Default binary message handler - override in subclasses
+    protected processBinaryMessage(_data: ArrayBuffer | Blob): void {
+        console.warn(`${this.constructor.name}: Binary message not handled by default implementation`);
     }
 
     // Abstract methods to be implemented by child classes
