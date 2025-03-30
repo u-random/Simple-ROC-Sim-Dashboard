@@ -929,6 +929,26 @@ cursor: default; /* Remove special cursors from map in mini-map mode */
   z-index: 0;
 }
 
+/* Control Overlay - Add at the end of the file */
+.control-overlay {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #0f0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 14px;
+  z-index: 10;
+}
+
+.control-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 
 /* Image styling for the Render texture */
 /* Almost duplicate of  camera-texture */
