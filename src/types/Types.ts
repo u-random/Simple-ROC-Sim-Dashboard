@@ -69,6 +69,7 @@ export interface ShipContextType {
     //simulators: (MockShipSimulator | UnityShipSimulator)[];
     getCameraFrame: (shipId: number) => string | Blob | null;
     subscribeToCameraFrames: (shipId: number, callback: (frame: string | Blob) => void) => () => void;
+    sendControlCommand: (shipId: number, command: any) => boolean;
 }
 
 export interface ShipProviderProps {

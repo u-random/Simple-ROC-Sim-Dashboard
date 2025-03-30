@@ -47,13 +47,35 @@ export class TelemetryClient extends BaseSocketClient {
         super.stop();
     }
 
+    // TODO: Use clearer typing here, especially message const
     // Send control command to a specific ship
-    public sendControl(shipId: number, command: any): boolean {
-        return this.sendMessage({
+    public sendControl(shipId: number, command: object): boolean {
+        console.log(`Sending Control ${JSON.stringify(command)} to ${shipId}`);
+        
+        // Check if controlModeActive exists in the command
+        const hasControlMode = (command as any).controlModeActive !== undefined;
+        if (hasControlMode) {
+            console.log(`Control command includes controlModeActive = ${(command as any).controlModeActive}`);
+        } else {
+            console.warn(`Control command is missing controlModeActive property!`);
+        }
+        
+        // Create a flattened message structure - don't nest the command inside a property
+        const message = {
             type: 'control',
-            id: shipId,
-            command
-        });
+            shipID: shipId.toString(),
+            // Add all command properties directly to the message
+            ...command
+        };
+        
+        // Double check the final message has the controlModeActive field if it should
+        console.log(`Sending flattened message: ${JSON.stringify(message)}`);
+        
+        if (hasControlMode && message.controlModeActive === undefined) {
+            console.error("controlModeActive was lost during message creation!");
+        }
+        
+        return this.sendMessage(message);
     }
 
     protected handleConnected(): void {

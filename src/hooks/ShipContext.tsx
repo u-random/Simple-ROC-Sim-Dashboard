@@ -206,6 +206,18 @@ export const ShipProvider: React.FC<ShipProviderProps> =
         }, [useMockShips, connectUnity, ipAddresses ? ipAddresses.join(',') : '', handleCameraMessage]);
 
         const constants: MapConstantsType = MapConstants;
+        
+        // Function to send control commands to the active ship
+        const sendControlCommand = useCallback((shipId: number, command: any): boolean => {
+            // Find an active telemetry client to send the command
+            if (telemetryClients.length > 0) {
+                // Use the first active client for now
+                // Could be improved to find the client that's connected to the specific ship
+                return telemetryClients[0].sendControl(shipId, command);
+            }
+            console.warn('No active telemetry clients available to send control command');
+            return false;
+        }, [telemetryClients]);
 
         return (
             <ShipContext.Provider value={{
@@ -217,7 +229,8 @@ export const ShipProvider: React.FC<ShipProviderProps> =
                 removeShip,
                 constants,
                 getCameraFrame,
-                subscribeToCameraFrames
+                subscribeToCameraFrames,
+                sendControlCommand
             }}>
                 {children}
             </ShipContext.Provider>
