@@ -117,15 +117,30 @@ export abstract class BaseSocketClient {
                 // Check if the message is binary or text
                 if (event.data instanceof ArrayBuffer || event.data instanceof Blob) {
                     const size = event.data instanceof ArrayBuffer ? event.data.byteLength : event.data.size;
-                    console.log(`Binary message received: ${size} bytes`);
+                    console.log(`${this.constructor.name}: Binary message received: ${size} bytes`);
                     this.processBinaryMessage(event.data);
                 } else {
-                    console.log(`Text message received: ${event.data.substring(0, 100)}...`);
+                    console.log(`${this.constructor.name}: Text message received`);
+                    
                     try {
+                        // Check if the message is empty or not valid JSON
+                        if (!event.data || event.data.trim() === '') {
+                            console.warn(`${this.constructor.name}: Received empty message`);
+                            return;
+                        }
+                        
                         const message = JSON.parse(event.data);
+                        
+                        // Check if the parsed message is valid
+                        if (message === null || typeof message !== 'object') {
+                            console.warn(`${this.constructor.name}: Parsed message is not an object: ${event.data}`);
+                            return;
+                        }
+                        
                         this.processMessage(message);
                     } catch (error) {
-                        console.error(`${this.constructor.name}: Error parsing message`, error);
+                        console.error(`${this.constructor.name}: Error parsing message: ${error}`, error);
+                        console.error(`${this.constructor.name}: Raw message content: ${event.data}`);
                     }
                 }
             };
