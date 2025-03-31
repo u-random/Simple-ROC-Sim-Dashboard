@@ -196,6 +196,13 @@ export const ShipProvider: React.FC<ShipProviderProps> =
             setSimulators(newMockSimulators);
             setTelemetryClients(newTelemetryClients);
             setVideoClients(newVideoClients);
+            
+            // Make VideoClients available to other components via window object
+            // @ts-ignore - adding property to window
+            window.__shipContext = {
+                videoClients: newVideoClients,
+                telemetryClients: newTelemetryClients
+            };
 
             // Cleanup function
             return () => {
