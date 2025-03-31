@@ -21,6 +21,8 @@ export enum ShipStatus {
 export interface ShipData {
     id      : number;
     name    : string;
+    isShip  : boolean;           // Flag to indicate if this is a ship (controllable) or other object
+    objectType: string;          // Type of object (ship, buoy, structure, etc.)
     position: {
         longitude: number;
         latitude : number;
@@ -47,6 +49,7 @@ export interface ShipData {
     };
     // Camera feed data can be either a base64 string or a binary Blob
     cameraFeed?     : string | Blob;
+    hasCamera?      : boolean;    // Indicates if this object has a camera
 }
 
 // Simplified ship data for summary displays
