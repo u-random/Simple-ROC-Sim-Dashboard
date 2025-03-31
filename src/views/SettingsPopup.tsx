@@ -58,40 +58,36 @@ const SettingsPopup: React.FC<SettingsPopupProps> = (props: SettingsPopupProps) 
     return (
         <div className="settings-popup" onClick={handleOverlayClick}>
             <div className="settings-content">
-                <h2>ROC Settings:</h2>
                 <button className="exit-button" onClick={onClose}>Close</button>
+                <h2>ROC Settings</h2>
 
-                <div className="connection-toggle">
                     <h3>Connection Mode:</h3>
                     <div className="toggle-container">
-                        <label className="toggle-switch">
-                            <input
-                                type="checkbox"
-                                checked={connectUnity}
-                                onChange={handleConnectionToggle}
-                            />
-                            <span className="toggle-slider"></span>
-                        </label>
                         <span className="toggle-label">
                             Unity Connection
                         </span>
+                        <input
+                            type="checkbox"
+                            checked={connectUnity}
+                            onChange={handleConnectionToggle}
+                            className="toggle-switch"
+                        />
                     </div>
-                </div>
 
                 <h3>Unity Servers:</h3>
-                <div className="ip-list">
-                    {ipAddresses.map((ip, index) => (
-                        <div key={index} className="ip-item">
-                            <input
-                                type="text"
-                                value={ip}
-                                onChange={(e) => updateIpAddress(index, e.target.value)}
-                            />
-                            <button onClick={() => removeIpAddress(index)}>—</button>
-                        </div>
-                    ))}
-                    <button className="add-ip-button" onClick={addIpAddress}>+</button>
-                </div>
+                <span>Enter IP addresses here</span>
+                {ipAddresses.map((ip, index) => (
+                    <div key={index} className="toggle-container">
+                        <input
+                            type="text"
+                            className="ip-item-input"
+                            value={ip}
+                            onChange={(e) => updateIpAddress(index, e.target.value)}
+                        />
+                        <div className="toggle-switch" onClick={() => removeIpAddress(index)}>—</div>
+                    </div>
+                ))}
+                <div className="toggle-switch" onClick={addIpAddress}>+</div>
             </div>
         </div>
     );
