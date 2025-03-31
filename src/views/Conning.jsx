@@ -11,8 +11,8 @@ const Conning = ({ isControlMode, setIsControlMode }) => {
                 <ConningInfo/>
             </div>
             <button
-                className={`control-mode-button ${isControlMode ? 'active' : ''}`}
-                onClick={() => setIsControlMode(!isControlMode)}
+                className={"disabled"}
+                title={"Disabled due to bad performance"}
             >
                 {isControlMode ? 'Exit Control' : 'Take Control'}
             </button>
@@ -21,3 +21,12 @@ const Conning = ({ isControlMode, setIsControlMode }) => {
 };
 // END SECTION HTML
 export default Conning;
+
+/* OLD button, to use in final product:
+<button
+    className={`control-mode-button ${isControlMode ? 'active' : ''}`}
+    onClick={() => setIsControlMode(!isControlMode)}
+>
+    {isControlMode ? 'Exit Control' : 'Take Control'}
+</button>
+*/
