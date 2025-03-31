@@ -110,6 +110,8 @@ export class TelemetryClient extends BaseSocketClient {
             this.shipsDictionary[id] = {
                 id: id,
                 name: name || `Ship ${id}`,
+                isShip: true,  // Default to true for backwards compatibility
+                objectType: "ship", // Default object type
                 position: { longitude: 0, latitude: 0 },
                 motion: { heading: 0, speed: 0, course: 0 },
                 status: ShipStatus.ACTIVE,
@@ -118,17 +120,20 @@ export class TelemetryClient extends BaseSocketClient {
                     lastUpdated: Date.now(),
                     signalStrength: 100
                 },
-                telemetry: {}
+                telemetry: {},
+                hasCamera: false // Default to no camera
             };
         }
         return this.shipsDictionary[id];
     }
 
-    // TODO: Update to process a ship array from message
+    // Updated to process a ship array from message
     private updateShipWithTelemetry(ship: ShipData, message: any): void {
         this.shipsDictionary[ship.id] = {
             ...ship,
             name: message.name || ship.name,
+            isShip: message.isShip !== undefined ? message.isShip : ship.isShip,
+            objectType: message.objectType || ship.objectType,
             position: {
                 longitude: message.position?.longitude || ship.position.longitude,
                 latitude: message.position?.latitude || ship.position.latitude
