@@ -55,6 +55,25 @@ const CameraView = ({
             console.log(`Binary frame size: ${frame.size} bytes`);
         }
     }, [shipId, isConnected, frame]);
+    
+    // Auto-request camera feed when ship changes and no frame is available
+    useEffect(() => {
+        // If we have a ship ID but no frame and no active connection
+        if (shipId && !frame && !isConnected) {
+            console.log(`CameraView: Auto-requesting camera feed for ship ${shipId}`);
+            
+            // Try to find video clients via window
+            // @ts-ignore - accessing window property
+            const videoClients = window.__shipContext?.videoClients || [];
+            
+            if (videoClients.length > 0) {
+                console.log(`CameraView: Found ${videoClients.length} video clients, requesting camera`);
+                videoClients[0].requestCameraFeed(shipId, true);
+            } else {
+                console.log(`CameraView: No video clients available to request camera feed`);
+            }
+        }
+    }, [shipId, frame, isConnected]);
 
 
     return (
